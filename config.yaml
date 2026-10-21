@@ -6,6 +6,14 @@ data:
   top_brands: 10
   baseline_train_fraction: 0.8
 
+model:
+  type: RandomForestRegressor
+  n_estimators: 100
+  random_state: 42
+  model_path: models/baseline_model.joblib
+  metrics_path: models/baseline_metrics.json
+  ref_val_path: models/reference_val_data.csv
+
 batch_size: 300
 n_batches_per_run: 48
 drift_start_batch: 16
