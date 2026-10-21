@@ -1,0 +1,26 @@
+{
+  "price_cap": 20576.419999999925,
+  "top_brands": [
+    "ALLURE AUTO",
+    "REGULAR",
+    "SLIM",
+    "THELOSTPUPPY",
+    "SPEEDWAV",
+    "DAILYOBJECTS",
+    "BLACK",
+    "WHITE",
+    "ENTHOPIA",
+    "RED"
+  ],
+  "rating_median": 3.0,
+  "reference_row_count": 4453,
+  "drop_stats": {
+    "initial_rows": 8906,
+    "dropped_duplicates": 0,
+    "dropped_missing": 0,
+    "dropped_non_positive_prices": 0,
+    "dropped_discount_gt_retail": 0,
+    "dropped_unparseable_dates": 0,
+    "final_rows": 8906
+  }
+}
