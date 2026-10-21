@@ -1,0 +1,36 @@
+random_seed: 42
+data:
+  csv_path: data/E-Commerce.csv
+  target: discount_pct       # fallback: delivery_days (see Section 4.5)
+  reference_fraction: 0.5
+  top_brands: 10
+  baseline_train_fraction: 0.8
+
+batch_size: 300
+n_batches_per_run: 48
+drift_start_batch: 16
+gradual_ramp_batches: 8
+
+drift_rule: both          # ks_only | psi_only | both
+psi_bins: 10
+psi_flag_threshold: 0.25
+p_value_threshold: 0.01
+persistence_required: 2   # flagged checks in a row = confirmed alert
+
+adaptive:
+  normal_interval: 4
+  alert_interval: 1
+  clean_checks_to_return: 3
+
+performance:
+  degradation_factor: 1.2
+  consecutive_batches: 2
+
+retraining:
+  min_improvement: 0.05
+  max_old_data_regression: 0.10
+
+drift_sizes:
+  small:  {price_factor: 1.15, category_share_drop: 0.10, rating_shift: -0.2}
+  medium: {price_factor: 1.40, category_share_drop: 0.25, rating_shift: -0.5}
+  large:  {price_factor: 2.00, category_share_drop: 0.45, rating_shift: -1.0}
