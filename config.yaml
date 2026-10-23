@@ -14,6 +14,17 @@ model:
   metrics_path: models/baseline_metrics.json
   ref_val_path: models/reference_val_data.csv
 
+quality:
+  max_missing_fraction: 0.10
+  unseen_category_tolerance: 0.05
+  expected_features:
+    - retail_price
+    - product_rating
+    - Region
+    - product_main_category
+    - BrandGroup
+    - OrderMonth
+
 batch_size: 300
 n_batches_per_run: 48
 drift_start_batch: 16
