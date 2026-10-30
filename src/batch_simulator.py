@@ -212,6 +212,15 @@ def apply_drift_to_batch(
         if feat not in df.columns:
             continue
 
+        is_numeric = pd.api.types.is_numeric_dtype(df[feat].dtype)
+
+        if not is_numeric:
+            # Categorical feature drift
+            target_drop = float(drift_params.get("category_share_drop", 0.25))
+            effective_drop = target_drop * multiplier
+            df[feat] = shift_category_mix(df[feat], drop=effective_drop, random_state=random_state)
+            continue
+
         if drift_type == "shift_mean":
             target_factor = float(drift_params.get("price_factor", 1.40))
             # Linear interpolation of factor from 1.0 to target_factor

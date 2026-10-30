@@ -28,6 +28,7 @@ def test_import_all_src_and_experiment_modules():
     import src.experiment_c
     import src.experiment_d
     import experiments.run_experiments
+    import experiments.run_all
 
     # Confirm key classes exist
     assert hasattr(src.decision_agent, "DecisionAgent")
@@ -160,3 +161,4 @@ def test_smoke_micro_experiment_d():
         assert rec["chosen_action"] == "INVESTIGATE"
     finally:
         exp_d._SCENARIOS = orig_scenarios
+

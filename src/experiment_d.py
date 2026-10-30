@@ -194,8 +194,9 @@ def run(cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     records: List[Dict[str, Any]] = []
 
+    modes = [False] if cfg.get("rules_only", False) else [False, True]
     for scenario in _SCENARIOS:
-        for use_llm in [False, True]:
+        for use_llm in modes:
             rec = _run_scenario(ref_df, pool_df, cfg, scenario, use_llm, seed)
             records.append(rec)
 

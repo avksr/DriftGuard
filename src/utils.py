@@ -24,3 +24,4 @@ def load_config(config_path: Union[str, Path] = "config.yaml") -> Dict[str, Any]
         return {}
     with open(p, "r", encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
+
