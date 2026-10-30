@@ -327,9 +327,16 @@ def run_phase7_demo() -> None:
     ref_val_df = pd.read_csv(ref_val_path)
     current_model = load_baseline_model(model_path)
 
-    # Reference training set = all ref_df rows not in ref_val_df
-    ref_train_indices = [i for i in ref_df.index if i not in ref_val_df.index]
-    ref_train_df = ref_df.loc[ref_train_indices].copy() if ref_train_indices else ref_df.copy()
+    # Reference training set = the training split of ref_df (matching baseline_model)
+    from sklearn.model_selection import train_test_split
+    train_fraction = config.get("data", {}).get("baseline_train_fraction", 0.8)
+    seed = config.get("random_seed", 42)
+    ref_train_df, _ = train_test_split(
+        ref_df,
+        train_size=train_fraction,
+        random_state=seed,
+        shuffle=True
+    )
 
     print(f"Reference Training Data:     {len(ref_train_df):,} samples")
     print(f"Reference Validation Data:   {len(ref_val_df):,} samples (Held-out)")

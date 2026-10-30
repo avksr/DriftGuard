@@ -7,7 +7,7 @@ Purpose: Implements data cleaning, feature engineering, and reference/clean-pool
 
 import os
 import json
-from typing import Dict, List, Tuple, Any, Optional
+from typing import Dict, List, Tuple, Any, Optional, Union
 import yaml
 import pandas as pd
 import numpy as np
@@ -242,7 +242,7 @@ def apply_reference_transformations(
 
 
 def prepare_datasets(
-    config_path: str = "config.yaml",
+    config_path: Union[str, Dict[str, Any]] = "config.yaml",
     save_to_disk: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, Any]]:
     """
@@ -255,13 +255,16 @@ def prepare_datasets(
     6. Optionally saves cleaned datasets and metadata to the data/ folder.
     
     Args:
-        config_path: Path to config.yaml.
+        config_path: Path to config.yaml or configuration dictionary.
         save_to_disk: Whether to save processed CSVs to disk.
         
     Returns:
         Tuple of (final_reference_df, final_clean_pool_df, ref_artifacts).
     """
-    config = load_config(config_path)
+    if isinstance(config_path, dict):
+        config = config_path
+    else:
+        config = load_config(config_path)
     csv_path = config["data"]["csv_path"]
     ref_fraction = config["data"].get("reference_fraction", 0.5)
     top_brands = config["data"].get("top_brands", 10)

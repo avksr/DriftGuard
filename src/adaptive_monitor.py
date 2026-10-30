@@ -29,6 +29,7 @@ class CheckRecord:
     drift_detected: Optional[bool] = None
     ranking: List[str] = field(default_factory=list)
     top_feature: Optional[str] = None
+    top_feature_psi: float = 0.0
     check_duration_sec: float = 0.0
     consecutive_flagged: int = 0
     confirmed_alert: bool = False
@@ -152,6 +153,9 @@ class BaseMonitor:
         drift_detected = bool(report.get("drift_detected", False))
         ranking = report.get("ranking", [])
         top_feature = ranking[0] if ranking else None
+        top_feature_psi = 0.0
+        if top_feature and "features" in report and top_feature in report["features"]:
+            top_feature_psi = float(report["features"][top_feature].get("psi", 0.0))
 
         # Update persistence counter (two consecutive flagged checks trigger confirmed alert)
         if drift_detected:
@@ -174,6 +178,7 @@ class BaseMonitor:
             drift_detected=drift_detected,
             ranking=ranking,
             top_feature=top_feature,
+            top_feature_psi=top_feature_psi,
             check_duration_sec=duration,
             consecutive_flagged=self.consecutive_flagged,
             confirmed_alert=is_confirmed

@@ -84,6 +84,7 @@ def run_phase5_comparison():
                 monitoring_mode=adaptive_check.mode,
                 drift_detected=bool(adaptive_check.drift_detected),
                 top_drifted_features=adaptive_check.ranking[:3],
+                top_feature_psi=adaptive_check.top_feature_psi,
                 performance_status=perf_rec.status,
                 batch_mae=perf_rec.batch_mae
             )
