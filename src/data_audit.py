@@ -10,14 +10,7 @@ from typing import Dict, Any, Tuple
 import yaml
 import pandas as pd
 import numpy as np
-
-
-def load_config(config_path: str = "config.yaml") -> Dict[str, Any]:
-    """Load configuration file safely."""
-    if os.path.exists(config_path):
-        with open(config_path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    return {}
+from src.utils import load_config
 
 
 def run_data_audit(csv_path: str = "data/E-Commerce.csv") -> Dict[str, Any]:

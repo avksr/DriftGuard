@@ -48,23 +48,7 @@ if PROJECT_ROOT not in sys.path:
 # Helper utilities
 # ---------------------------------------------------------------------------
 
-def load_config(config_path: Path = Path("config.yaml")) -> Dict[str, Any]:
-    """Load the YAML configuration file.
-
-    Parameters
-    ----------
-    config_path: Path
-        Path to ``config.yaml`` relative to the repository root.
-
-    Returns
-    -------
-    dict
-        Parsed configuration dictionary.
-    """
-    if not config_path.is_file():
-        raise FileNotFoundError(f"Config file not found: {config_path}")
-    with config_path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from src.utils import load_config
 
 
 def ensure_results_dir() -> Path:

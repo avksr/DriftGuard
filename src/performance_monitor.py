@@ -13,8 +13,11 @@ from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass, field
 import json
 import os
+import logging
 import yaml
 import numpy as np
+
+logger = logging.getLogger(__name__)
 import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
@@ -84,8 +87,8 @@ class PerformanceMonitor:
             try:
                 metrics = load_baseline_metrics(metrics_path)
                 return float(metrics.get("baseline_val_mae", 0.15))
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(f"Failed to load baseline metrics from {metrics_path}: {exc}")
         return 0.15
 
     def reset(self) -> None:
@@ -119,8 +122,8 @@ class PerformanceMonitor:
                 model_path = self.config.get("model", {}).get("model_path", "models/baseline_model.joblib")
                 active_model = load_baseline_model(model_path)
                 self.model = active_model
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(f"Failed to load baseline model from {model_path}: {exc}")
 
         # Case 1: Labels unavailable (ground truth not yet arrived in production)
         if not labels_available or TARGET_COLUMN not in batch_df.columns:

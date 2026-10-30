@@ -15,22 +15,7 @@ import yaml
 import numpy as np
 import pandas as pd
 from scipy.stats import ks_2samp, chi2_contingency
-
-
-def load_config(config_path: str = "config.yaml") -> Dict[str, Any]:
-    """
-    Load project configuration from YAML file.
-    
-    Args:
-        config_path: Path to config.yaml.
-        
-    Returns:
-        Dictionary of configuration parameters.
-    """
-    if not os.path.exists(config_path):
-        return {}
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+from src.utils import load_config
 
 
 def ks_test(

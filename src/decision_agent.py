@@ -12,9 +12,12 @@ from dataclasses import dataclass, field
 import os
 import json
 import re
+import logging
 import urllib.request
 import urllib.error
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 # Load optional .env if present
 load_dotenv()
@@ -498,8 +501,9 @@ class DecisionAgent:
                 )
                 raw_llm = call_llm(prompt)
                 parsed_llm = extract_json_from_llm(raw_llm)
-            except Exception:
+            except Exception as exc:
                 # LLM call or key unavailable -> smoothly proceed to guardrails/template
+                logger.warning(f"LLM call or parsing failed for batch {batch_id}: {exc}")
                 parsed_llm = None
 
         # Step 3: Guardrails
@@ -555,91 +559,3 @@ class DecisionAgent:
             follow_up_checks=follow_ups,
             raw_llm_response=raw_llm
         )
-
-
-# -----------------------------------------------------------------------------
-# Demo Runner (Section 11.3 Phase 6 Requirement)
-# -----------------------------------------------------------------------------
-
-def run_phase6_demo() -> None:
-    """
-    Demonstrates the Hybrid Decision Agent under key incident scenarios:
-    1. Incident with No API Key (Template fallback)
-    2. Incident with Guardrail Override (LLM picks unauthorized action)
-    3. Severe Drift + Degraded Performance (Recommending PROPOSE_RETRAIN)
-    """
-    from unittest.mock import patch
-
-    print("=" * 85)
-    print(" DRIFTMONITOR: PHASE 6 HYBRID DECISION AGENT DEMONSTRATION")
-    print("=" * 85)
-
-    agent = DecisionAgent(use_llm=True)
-
-    # Scenario 1: Drift detected, labels unavailable (pure template fallback, no API key)
-    print("\n--- SCENARIO 1: Drift Detected & Labels Delayed (No API Key Fallback) ---")
-    quality1 = {"passed": True, "issues": []}
-    drift1 = {
-        "drift_detected": True,
-        "ranking": ["retail_price", "product_main_category"],
-        "features": {
-            "retail_price": {"psi": 0.3845, "ks_stat": 0.28, "ks_p": 0.0001, "flagged": True},
-            "product_main_category": {"psi": 0.08, "chi2_p": 0.15, "flagged": False}
-        }
-    }
-    perf1 = {"status": "unverified", "batch_mae": None, "baseline_mae": 0.1432}
-
-    rep1 = agent.decide(batch_id=16, quality_status=quality1, drift_report=drift1, performance_record=perf1)
-    print(f"Situation:            Drift confirmed, labels not yet arrived")
-    print(f"Allowed Actions:      {rep1.allowed_actions}")
-    print(f"Default Action:       {rep1.default_action}")
-    print(f"Chosen Action:        {rep1.chosen_action}")
-    print(f"Used LLM:             {rep1.used_llm}")
-    print(f"Guardrail Overridden: {rep1.guardrail_overridden}")
-    print(f"Summary:              {rep1.summary}")
-    print(f"Observed Facts:       {rep1.observed_facts}")
-
-    # Scenario 2: Drift detected + performance degraded (Propose Retraining)
-    print("\n--- SCENARIO 2: Drift Detected & Sustained Degradation (PROPOSE_RETRAIN) ---")
-    drift2 = {
-        "drift_detected": True,
-        "ranking": ["retail_price"],
-        "features": {"retail_price": {"psi": 0.4210, "ks_stat": 0.32, "ks_p": 0.0, "flagged": True}}
-    }
-    perf2 = {"status": "degraded", "batch_mae": 0.2245, "baseline_mae": 0.1432}
-
-    rep2 = agent.decide(batch_id=18, quality_status=quality1, drift_report=drift2, performance_record=perf2)
-    print(f"Situation:            Drift confirmed & consecutive degraded batches")
-    print(f"Allowed Actions:      {rep2.allowed_actions}")
-    print(f"Chosen Action:        {rep2.chosen_action}")
-    print(f"Summary:              {rep2.summary}")
-    print(f"Follow-up Checks:     {rep2.follow_up_checks}")
-
-    # Scenario 3: Guardrail intervention when an LLM proposes a forbidden action
-    print("\n--- SCENARIO 3: Guardrail Intervention (Disallowed Action Blocked) ---")
-    # For degraded performance, allowed is [PROPOSE_RETRAIN, INVESTIGATE]
-    # Suppose an LLM tries to say "CONTINUE"
-    fake_llm_output = json.dumps({
-        "summary": "Everything looks fine, no action needed.",
-        "observed_facts": ["Price changed"],
-        "possible_explanations": ["Normal fluctuation"],
-        "recommended_action": "CONTINUE",  # FORBIDDEN!
-        "follow_up_checks": []
-    })
-    
-    patch_target = f"{__name__}.call_llm"
-    with patch(patch_target, return_value=fake_llm_output):
-        rep3 = agent.decide(batch_id=19, quality_status=quality1, drift_report=drift2, performance_record=perf2)
-
-    print(f"LLM Proposed Action:  'CONTINUE' (Forbidden when degraded)")
-    print(f"Guardrail Overridden: {rep3.guardrail_overridden}")
-    print(f"Enforced Action:      {rep3.chosen_action}")
-    print(f"Summary:              {rep3.summary}")
-
-    print("\n" + "=" * 85)
-    print(" PHASE 6 DEMONSTRATION COMPLETE")
-    print("=" * 85)
-
-
-if __name__ == "__main__":
-    run_phase6_demo()

@@ -48,6 +48,7 @@ performance:
 retraining:
   min_improvement: 0.05
   max_old_data_regression: 0.10
+  train_fraction: 0.75
 
 drift_sizes:
   small:  {price_factor: 1.15, category_share_drop: 0.10, rating_shift: -0.2}

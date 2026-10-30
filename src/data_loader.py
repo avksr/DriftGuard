@@ -19,21 +19,7 @@ CATEGORICAL_FEATURES: List[str] = ["Region", "product_main_category", "BrandGrou
 ALL_FEATURES: List[str] = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 TARGET_COLUMN: str = "discount_pct"
 
-
-def load_config(config_path: str = "config.yaml") -> Dict[str, Any]:
-    """
-    Load configuration from YAML file.
-    
-    Args:
-        config_path: Path to config.yaml.
-        
-    Returns:
-        Dictionary of configuration parameters.
-    """
-    if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from src.utils import load_config
 
 
 def load_raw_data(csv_path: str = "data/E-Commerce.csv") -> pd.DataFrame:

@@ -21,6 +21,7 @@ The orchestrator calls run() N times with different seeds.
 from __future__ import annotations
 
 from typing import Any, Dict, List
+import numpy as np
 
 from src._exp_utils import load_experiment_data
 from src.batch_simulator import simulate_run
@@ -81,7 +82,6 @@ def run(cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
 
         for strategy_name, result in strategy_results.items():
             delay = result.detection_delay  # None if never detected
-            import numpy as np
             records.append({
                 "experiment": "B",
                 "scenario": scenario["label"],

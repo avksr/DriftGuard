@@ -20,12 +20,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 
-import sys
-# Ensure project root is on sys.path for direct script execution
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
-
 from src.data_loader import (
     load_config,
     prepare_datasets,

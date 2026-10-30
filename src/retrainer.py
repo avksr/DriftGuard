@@ -240,9 +240,10 @@ def retrain_model(
         recent_train_df = pd.concat(recent_train_dfs, ignore_index=True)
         combined_train_df = pd.concat([ref_train_df, recent_train_df], ignore_index=True)
     else:
-        # If very few batches exist, take an 80/20 train/val split of available recent batches
+        # If very few batches exist, take a train/val split of available recent batches
         shuffled = recent_val_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
-        split_idx = int(len(shuffled) * 0.75)
+        retrain_train_frac = float(config.get("retraining", {}).get("train_fraction", 0.75))
+        split_idx = int(len(shuffled) * retrain_train_frac)
         recent_train_df = shuffled.iloc[:split_idx]
         recent_val_df = shuffled.iloc[split_idx:]
         combined_train_df = pd.concat([ref_train_df, recent_train_df], ignore_index=True)
@@ -294,103 +295,3 @@ def retrain_model(
         n_retrain_samples=len(combined_train_df),
         n_recent_val_samples=len(recent_val_df)
     )
-
-
-# -----------------------------------------------------------------------------
-# Demo Runner (Section 11.3 Phase 7 Requirement)
-# -----------------------------------------------------------------------------
-
-def run_phase7_demo() -> None:
-    """
-    Demonstrates controlled retraining on real project data with drift injection:
-    1. Evaluates candidate retraining when drift causes performance degradation.
-    2. Verifies the dual-window acceptance rule (5% recent gain + 10% max old regression).
-    """
-    from src.data_loader import prepare_datasets
-    from src.batch_simulator import simulate_run
-
-    print("=" * 85)
-    print(" DRIFTMONITOR: PHASE 7 CONTROLLED RETRAINING DEMONSTRATION")
-    print("=" * 85)
-
-    config = load_config("config.yaml")
-
-    # 1. Load reference datasets and baseline model
-    ref_df, pool_df, _ = prepare_datasets("config.yaml", save_to_disk=False)
-    ref_val_path = config.get("model", {}).get("ref_val_path", "models/reference_val_data.csv")
-    model_path = config.get("model", {}).get("model_path", "models/baseline_model.joblib")
-
-    if not os.path.exists(ref_val_path) or not os.path.exists(model_path):
-        print("Pre-trained baseline model or reference validation split not found.")
-        return
-
-    ref_val_df = pd.read_csv(ref_val_path)
-    current_model = load_baseline_model(model_path)
-
-    # Reference training set = the training split of ref_df (matching baseline_model)
-    from sklearn.model_selection import train_test_split
-    train_fraction = config.get("data", {}).get("baseline_train_fraction", 0.8)
-    seed = config.get("random_seed", 42)
-    ref_train_df, _ = train_test_split(
-        ref_df,
-        train_size=train_fraction,
-        random_state=seed,
-        shuffle=True
-    )
-
-    print(f"Reference Training Data:     {len(ref_train_df):,} samples")
-    print(f"Reference Validation Data:   {len(ref_val_df):,} samples (Held-out)")
-    print(f"Active Baseline Model:       {model_path}")
-
-    # 2. Simulate 4 labelled incoming batches under large retail_price drift
-    print("\nSimulating 4 incoming batches with severe retail_price drift...")
-    sim_run = simulate_run(
-        pool_df=pool_df,
-        config=config,
-        run_id="demo_retrain",
-        drift_type="shift_mean",
-        drift_size="large",
-        drift_shape="sudden",
-        drift_start_batch=0,
-        affected_features=["retail_price"],
-        n_batches=4,
-        batch_size=300
-    )
-
-    # 3. Execute Controlled Retraining
-    print("\nExecuting retrain_model() with dual-window validation...")
-    result = retrain_model(
-        current_model=current_model,
-        ref_train_df=ref_train_df,
-        ref_val_df=ref_val_df,
-        recent_batches=sim_run.batches,
-        config=config,
-        val_batches_count=2,
-        reason="Agent proposed retraining due to sustained error degradation"
-    )
-
-    # 4. Display Results
-    print("\n" + "-" * 85)
-    print(" RETRAINING EVALUATION SUMMARY")
-    print("-" * 85)
-    print(f"Decision:                     {result.decision} (accepted={result.accepted})")
-    print(f"Reason:                       {result.reason}")
-    print(f"Retraining Data Size:         {result.n_retrain_samples:,} samples")
-    print(f"Recent Validation Window:     {result.n_recent_val_samples:,} samples")
-    print("\nRecent Drifted Window Performance:")
-    print(f"  - Current Model MAE:        {result.current_recent_mae:.4f}")
-    print(f"  - Candidate Model MAE:      {result.candidate_recent_mae:.4f}")
-    print(f"  - Relative Improvement:     {result.recent_improvement_pct:+.2f}% (Threshold: >= +5.0%)")
-    print("\nOld Reference Data Performance (Forgetting Guardrail):")
-    print(f"  - Current Model MAE:        {result.current_old_mae:.4f}")
-    print(f"  - Candidate Model MAE:      {result.candidate_old_mae:.4f}")
-    print(f"  - Old Data Regression:      {result.old_data_regression_pct:+.2f}% (Threshold: <= +10.0%)")
-    print("-" * 85)
-    print(f"Active Model Deployed:        {'Candidate Model' if result.accepted else 'Original Baseline Model'}")
-    print("=" * 85)
-    print(" PHASE 7 DEMONSTRATION COMPLETE")
-    print("=" * 85)
-
-
-if __name__ == "__main__":
-    run_phase7_demo()
