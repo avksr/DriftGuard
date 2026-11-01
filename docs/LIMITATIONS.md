@@ -66,3 +66,4 @@ This document outlines the architectural boundaries, statistical constraints, an
 ### 3.3 Platform & Runtime Testing
 - All automated tests, benchmarks, and dashboard executions were validated exclusively on Windows 11 64-bit under Python 3.14.6.
 - Cross-platform behavior on Linux/macOS and containerized environments has not been verified in continuous integration.
+

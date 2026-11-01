@@ -205,12 +205,18 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mvinayak96/ecommerce-s
 # curl -L "https://raw.githubusercontent.com/mvinayak96/ecommerce-sales-analysis/main/E-Commerce.csv" -o data/E-Commerce.csv
 ```
 
-### 3. Run Test Suite
+### 3. Train Baseline Model
+Train the baseline regression model on the reference dataset:
+```bash
+python src/baseline_model.py
+```
+
+### 4. Run Test Suite
 ```bash
 pytest tests/ -v
 ```
 
-### 4. Run Research Experiments Pipeline
+### 5. Run Research Experiments Pipeline
 ```bash
 # Quick smoke mode (2 seeds, runs in ~15 seconds):
 python experiments/run_all.py --quick
@@ -219,7 +225,7 @@ python experiments/run_all.py --quick
 python experiments/run_all.py
 ```
 
-### 5. Launch Interactive Dashboard
+### 6. Launch Interactive Dashboard
 ```bash
 streamlit run app.py
 ```

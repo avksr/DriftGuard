@@ -204,3 +204,4 @@ All research benchmarks are run across 30 random seeds (seeds 42 to 71) with 48 
 | **Small Drift Sizes** | `drift_sizes.small` | Price $\times 1.15$, Drop 0.10, Rating $-0.2$ | Mild perturbation |
 | **Medium Drift Sizes** | `drift_sizes.medium` | Price $\times 1.40$, Drop 0.25, Rating $-0.5$ | Standard benchmark perturbation |
 | **Large Drift Sizes** | `drift_sizes.large` | Price $\times 2.00$, Drop 0.45, Rating $-1.0$ | Severe perturbation |
+

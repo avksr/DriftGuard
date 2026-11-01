@@ -93,3 +93,4 @@ This document provides two-sentence module summaries with key design decisions, 
 
 ### Q12: How was the AI coding assistant utilized during development, and what guardrails did you enforce?
 **Answer:** The assistant was used as an autonomous pair-programmer for scaffolding, test writing, and running reproducible benchmarks. Strict ground rules were enforced: all claims required empirical evidence from executed terminal commands, no statistical thresholds were altered to artificially improve numbers, all results were read directly from generated CSV files, and UI constraints (zero emojis, single accent color, no marketing hype) were enforced to maintain production-grade engineering standards.
+

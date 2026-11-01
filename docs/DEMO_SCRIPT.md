@@ -78,3 +78,4 @@ This script provides an exact step-by-step walkthrough to demonstrate DriftGuard
 - **Tab 1 MAE Chart:** Point to the model error surging while feature PSI remains flat.
 - **Tab 3 Incident Log:** Point to the incident table row showing `chosen_action: INVESTIGATE`, `performance_status: degraded`, and `drift_detected: False`.
 - **Export Buttons:** Highlight the three export options (`Download report (Markdown)`, `Download log (CSV)`, `Download log (JSON)`).
+

@@ -112,3 +112,4 @@ Evaluated across 30 random seeds (seeds 42 to 71) streaming batches 16 through 2
 
 ### Interpretation
 We evaluated whether streaming detector and performance monitor outputs into the deterministic rules table selected the expected action across four synthetic operating conditions. In all 120 runs across 30 seeds, the selected action matched the rules table expectation with zero unnecessary retrain proposals; however, because the expected actions are defined by the same rules table and evaluated without LLM generation, this benchmark tests component routing rather than operational policy optimality.
+
