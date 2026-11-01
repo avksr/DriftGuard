@@ -411,7 +411,7 @@ def _tab_experiment_results() -> None:
         "Run the experiments first to populate these results."
     )
 
-    csv_files = sorted(RESULTS_DIR.glob("experiment_*.csv"))
+    csv_files = sorted([f for f in RESULTS_DIR.glob("experiment_*.csv") if not f.stem.endswith("_summary")])
     if not csv_files:
         st.info(
             "No experiment results found in `results/`. "
@@ -419,7 +419,7 @@ def _tab_experiment_results() -> None:
         )
         return
 
-    labels = [f.stem.split("_")[1].upper() for f in csv_files]
+    labels = sorted(list({f.stem.split("_")[1].upper() for f in csv_files}))
     selected = st.selectbox("Select experiment", labels)
 
     csv_path = RESULTS_DIR / f"experiment_{selected.lower()}.csv"
