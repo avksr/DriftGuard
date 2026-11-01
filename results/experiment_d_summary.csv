@@ -1,0 +1,5 @@
+scenario,use_llm,correct_action_mean,correct_action_std,unnecessary_retrain_mean,unnecessary_retrain_std,guardrail_overridden_mean,guardrail_overridden_std
+drift_and_degraded,0,0.0,0.0,0.0,0.0,0.0,0.0
+drift_labels_hidden,0,0.5,0.5085476277156078,0.0,0.0,0.0,0.0
+drift_perf_fine,0,0.0,0.0,0.0,0.0,0.0,0.0
+perf_worse_no_drift,0,0.0,0.0,0.0,0.0,0.0,0.0

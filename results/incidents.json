@@ -1,0 +1,306 @@
+[
+  {
+    "timestamp": "2026-10-24T06:49:04.663955+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 17,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1616,
+    "action": "INVESTIGATE",
+    "summary": "Batch 17: Confirmed alert=True, Performance=normal (MAE=0.1616)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:04.769410+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 18,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "OrderMonth"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1533,
+    "action": "INVESTIGATE",
+    "summary": "Batch 18: Confirmed alert=True, Performance=normal (MAE=0.1533)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:04.872879+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 19,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1612,
+    "action": "INVESTIGATE",
+    "summary": "Batch 19: Confirmed alert=True, Performance=normal (MAE=0.1612)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:04.927147+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 20,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "BrandGroup",
+      "product_main_category"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1442,
+    "action": "INVESTIGATE",
+    "summary": "Batch 20: Confirmed alert=True, Performance=normal (MAE=0.1442)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:04.981867+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 21,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1489,
+    "action": "INVESTIGATE",
+    "summary": "Batch 21: Confirmed alert=True, Performance=normal (MAE=0.1489)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.035247+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 22,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "Region"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1495,
+    "action": "INVESTIGATE",
+    "summary": "Batch 22: Confirmed alert=True, Performance=normal (MAE=0.1495)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.088745+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 23,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1496,
+    "action": "INVESTIGATE",
+    "summary": "Batch 23: Confirmed alert=True, Performance=normal (MAE=0.1496)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.307606+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 26,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1446,
+    "action": "INVESTIGATE",
+    "summary": "Batch 26: Confirmed alert=True, Performance=normal (MAE=0.1446)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.359850+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 27,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "product_rating"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1484,
+    "action": "INVESTIGATE",
+    "summary": "Batch 27: Confirmed alert=True, Performance=normal (MAE=0.1484)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.429490+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 28,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.144,
+    "action": "INVESTIGATE",
+    "summary": "Batch 28: Confirmed alert=True, Performance=normal (MAE=0.1440)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.499320+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 29,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1651,
+    "action": "INVESTIGATE",
+    "summary": "Batch 29: Confirmed alert=True, Performance=normal (MAE=0.1651)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.569884+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 30,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.157,
+    "action": "INVESTIGATE",
+    "summary": "Batch 30: Confirmed alert=True, Performance=normal (MAE=0.1570)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.813299+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 33,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "BrandGroup",
+      "product_main_category"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1489,
+    "action": "INVESTIGATE",
+    "summary": "Batch 33: Confirmed alert=True, Performance=normal (MAE=0.1489)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:05.885576+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 34,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "BrandGroup",
+      "product_main_category"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1637,
+    "action": "INVESTIGATE",
+    "summary": "Batch 34: Confirmed alert=True, Performance=normal (MAE=0.1637)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:06.124208+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 38,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "OrderMonth"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1496,
+    "action": "INVESTIGATE",
+    "summary": "Batch 38: Confirmed alert=True, Performance=normal (MAE=0.1496)",
+    "guardrail_overridden": false
+  },
+  {
+    "timestamp": "2026-10-24T06:49:06.333607+00:00",
+    "run_id": "demo_phase_5",
+    "batch_id": 42,
+    "monitoring_mode": "ALERT",
+    "quality_status": "passed",
+    "drift_detected": true,
+    "top_drifted_features": [
+      "retail_price",
+      "product_main_category",
+      "BrandGroup"
+    ],
+    "top_feature_psi": 0.0,
+    "performance_status": "normal",
+    "batch_mae": 0.1571,
+    "action": "INVESTIGATE",
+    "summary": "Batch 42: Confirmed alert=True, Performance=normal (MAE=0.1571)",
+    "guardrail_overridden": false
+  }
+]

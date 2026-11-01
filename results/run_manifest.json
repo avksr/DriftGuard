@@ -1,0 +1,84 @@
+{
+  "timestamp_utc": "2026-11-01T09:06:52.476540+00:00",
+  "completed_utc": "2026-11-01T09:07:27.768722+00:00",
+  "git_commit": "873f8dbc19901089084712ae827b5ec777df8188",
+  "number_of_seeds": 30,
+  "runtimes_seconds": {
+    "experiment_a_seconds": 1935.12,
+    "experiment_b_seconds": 961.89,
+    "experiment_c_seconds": 107.0,
+    "experiment_d_seconds": 33.5,
+    "total_seconds": 35.29
+  },
+  "configuration": {
+    "random_seed": 42,
+    "experiment_repeats": 30,
+    "data": {
+      "csv_path": "data/E-Commerce.csv",
+      "target": "discount_pct",
+      "reference_fraction": 0.5,
+      "top_brands": 10,
+      "baseline_train_fraction": 0.8
+    },
+    "model": {
+      "type": "RandomForestRegressor",
+      "n_estimators": 100,
+      "random_state": 42,
+      "model_path": "models/baseline_model.joblib",
+      "metrics_path": "models/baseline_metrics.json",
+      "ref_val_path": "models/reference_val_data.csv"
+    },
+    "quality": {
+      "max_missing_fraction": 0.1,
+      "unseen_category_tolerance": 0.05,
+      "expected_features": [
+        "retail_price",
+        "product_rating",
+        "Region",
+        "product_main_category",
+        "BrandGroup",
+        "OrderMonth"
+      ]
+    },
+    "batch_size": 300,
+    "n_batches_per_run": 48,
+    "drift_start_batch": 16,
+    "gradual_ramp_batches": 8,
+    "drift_rule": "both",
+    "psi_bins": 10,
+    "psi_flag_threshold": 0.25,
+    "p_value_threshold": 0.01,
+    "persistence_required": 2,
+    "adaptive": {
+      "normal_interval": 4,
+      "alert_interval": 1,
+      "clean_checks_to_return": 3
+    },
+    "performance": {
+      "degradation_factor": 1.2,
+      "consecutive_batches": 2
+    },
+    "retraining": {
+      "min_improvement": 0.05,
+      "max_old_data_regression": 0.1,
+      "train_fraction": 0.75
+    },
+    "drift_sizes": {
+      "small": {
+        "price_factor": 1.15,
+        "category_share_drop": 0.1,
+        "rating_shift": -0.2
+      },
+      "medium": {
+        "price_factor": 1.4,
+        "category_share_drop": 0.25,
+        "rating_shift": -0.5
+      },
+      "large": {
+        "price_factor": 2.0,
+        "category_share_drop": 0.45,
+        "rating_shift": -1.0
+      }
+    }
+  }
+}
