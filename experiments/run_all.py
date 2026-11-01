@@ -289,7 +289,7 @@ def run_pipeline(seeds: int | None = None, quick: bool = False, exps: List[str] 
     elif seeds is not None:
         n_seeds = seeds
     else:
-        n_seeds = int(cfg.get("experiment_seeds", 15))
+        n_seeds = int(cfg.get("experiment_repeats", cfg.get("experiment_seeds", 30)))
 
     results_dir = PROJECT_ROOT / "results"
     results_dir.mkdir(parents=True, exist_ok=True)

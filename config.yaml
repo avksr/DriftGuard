@@ -1,4 +1,5 @@
 random_seed: 42
+experiment_repeats: 30
 data:
   csv_path: data/E-Commerce.csv
   target: discount_pct       # fallback: delivery_days (see Section 4.5)
