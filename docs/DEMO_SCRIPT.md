@@ -1,6 +1,6 @@
 # DriftGuard: 3-Minute Interview Demonstration Script
 
-This script provides an exact step-by-step walkthrough to demonstrate DriftGuard during an interview or portfolio presentation using the four pre-configured dashboard presets.
+This script provides an exact step-by-step walkthrough to present DriftGuard during an interview or portfolio presentation using the four pre-configured dashboard presets.
 
 **Total Duration:** 3 minutes  
 **Application Command:** `streamlit run app.py`  
@@ -53,7 +53,7 @@ This script provides an exact step-by-step walkthrough to demonstrate DriftGuard
 ### What to Say
 > "Here is an honest limitation of hard thresholding in monitoring systems: when drift is subtle (a 15% price increase), the Population Stability Index hovers between 0.05 and 0.15, never crossing the conservative 0.25 threshold.
 >
-> As a result, our default combined rule—which requires both a statistically significant KS test and PSI $\ge 0.25$—misses this drift in 90% of runs under Adaptive monitoring. In Experiment A, we proved that the Kolmogorov-Smirnov test alone detects this drift in 30 out of 30 runs with a 1.1-batch delay, but KS alone suffers from false alarms on uncorrupted batches. The conservative 0.25 PSI threshold that eliminated false alarms under clean data makes the system insensitive to small distributional shifts."
+> As a result, our default combined rule—which requires both a KS test with p-value < 0.01 and PSI $\ge 0.25$—misses this drift in 90% of runs under Adaptive monitoring. In Experiment A, the Kolmogorov-Smirnov test alone detected this drift in 30 out of 30 runs with a 1.1-batch delay, but KS alone suffers from false alarms on uncorrupted batches. The conservative 0.25 PSI threshold that eliminated false alarms under clean data makes the system insensitive to small distributional shifts."
 
 ### What to Point At on Screen
 - **Summary Strip:** Show `First confirmed alert: None` and `Detection delay: N/A` for all monitors.

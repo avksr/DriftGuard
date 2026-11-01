@@ -4,6 +4,15 @@ This document presents the complete numerical results from Experiments A, B, C, 
 
 ---
 
+## Main Research Question
+
+**Can adaptive monitoring detect distribution drift almost as fast as checking every batch while running far fewer checks?**
+
+**Answer (neutral summary):**
+Adaptive monitoring used 25% to 45% fewer full checks than checking every batch; it matched Fixed_1's delay on large sudden drift (1.0 batch), added about 2 batches on medium sudden drift (4.27 vs 2.37) and about 6 on medium gradual drift (13.30 vs 7.30), and was faster than Fixed_4 on all detected cases; it did not detect small drift under the default rule; no strategy produced false alarms in the no-drift runs.
+
+---
+
 ## Experiment A: Detector Sensitivity and False-Alarm Trade-Offs
 
 Source: [`results/experiment_a_summary.csv`](file:///c:/Users/avksr/DRIFT_GUARD/DriftGuard/results/experiment_a_summary.csv)  
@@ -76,6 +85,13 @@ Evaluated across 30 random seeds (seeds 42 to 71) on 48-batch streams under defa
 ### Interpretation
 We evaluated detection delay, missed detections, and computational check savings across `Fixed_1`, `Fixed_4`, and `Adaptive(4,1,3)` monitors over five drift conditions. The numbers show that Adaptive monitoring matched Fixed_1's 1.0-batch delay on large sudden drift while saving 25% of full checks, added 1.9 batches of delay on medium sudden drift while saving 33.1% of checks, and added 6.0 batches on gradual drift while saving 45.4% of checks, whereas Fixed_4 missed 2 of 30 medium sudden runs and 3 of 30 gradual runs.
 
+### Threshold Dynamics (Seed 44 Diagnostic Trace)
+In Seed 44 under medium sudden drift, the observed detection delays followed an unexpected order: Fixed_1 confirmed drift after 7 batches (batch 23), Fixed_4 after 4 batches (batch 20), and Adaptive after 12 batches (batch 28). Diagnostic inspection revealed the underlying mechanism:
+1. **Fluctuation Near Threshold:** After drift injection at batch 16, true feature PSI hovered near the $0.25$ threshold boundary ($0.21$ to $0.33$). Sampling noise caused the flag condition to alternate between true and false from batch to batch.
+2. **Persistence Reset:** The persistence rule requires two consecutive flagged checks to confirm an alert. A single unflagged check resets the persistence counter to zero.
+3. **Adaptive Mode Reversion:** Because batches 17, 18, and 19 fell just below threshold ($0.21$ to $0.24$), Adaptive observed three clean checks and reverted to normal mode ($k=4$), delaying its next check while drift was still active.
+4. **Sampling Timing of Fixed_4:** Fixed_4 evaluated batches 16 and 20 directly, skipping batches 17–19. Both batch 16 and batch 20 exceeded $0.25$, satisfying the two-consecutive rule earlier than Fixed_1, which was repeatedly reset by the intermediate batches. Hard thresholds combined with consecutive persistence counters create sensitivity to batch sampling points near the decision boundary.
+
 ---
 
 ## Experiment C: Feature Ranking Accuracy (Precision@k)
@@ -96,6 +112,21 @@ Evaluated across 30 random seeds (seeds 42 to 71) across 5 evaluation batches po
 ### Interpretation
 We measured the precision of top-$k$ feature rankings against the ground truth of truly changed columns across single, two-, and three-feature drift scenarios. The results show that while `retail_price` and `Region` achieved $1.000$ precision@1, rating drift achieved $0.000$ precision because its post-perturbation PSI ($0.004$ to $0.040$) remained lower than the clean sampling noise floor of categorical columns such as `product_main_category` (mean clean PSI $0.0955$).
 
+### Rating Injection Protocol & Feature Noise Floor
+- **Rating Injection Protocol:** `product_rating` is always perturbed additively (-0.5, clipped to 1 to 5) in every scenario. Earlier multi-feature results were invalid because ratings had been multiplied (producing invalid rating values up to 7); the old files are archived in `results/archive/` (`experiment_c_old.csv`, `experiment_c_summary_old.csv`, `experiment_c_old.png`).
+- **Feature Noise Floor (Batch Size 300, 30 Clean Batches):**
+
+| Feature | Type | Mean Clean PSI | Max Clean PSI | Std Clean PSI |
+| :--- | :--- | :--- | :--- | :--- |
+| `product_main_category` | categorical | 0.0955 | 0.1438 | 0.0218 |
+| `BrandGroup` | categorical | 0.0399 | 0.1026 | 0.0201 |
+| `retail_price` | numeric | 0.0363 | 0.0937 | 0.0172 |
+| `product_rating` | numeric | 0.0148 | 0.0354 | 0.0099 |
+| `Region` | categorical | 0.0098 | 0.0405 | 0.0082 |
+| `OrderMonth` | categorical | 0.0083 | 0.0245 | 0.0070 |
+
+*Note on PSI Comparability:* Raw PSI is not comparable across features with different numbers of categories or feature types, and was not normalised in this implementation. High-cardinality categorical features naturally exhibit higher baseline sampling noise than bounded numerical features.
+
 ---
 
 ## Experiment D: End-to-End Decision Agent Evaluation
@@ -110,6 +141,22 @@ Evaluated across 30 random seeds (seeds 42 to 71) streaming batches 16 through 2
 | `perf_worse_no_drift` | 30 | 30 | 1.000 | 1.000 | 0 | 0 | 0.000 | INVESTIGATE: 30 |
 | `drift_labels_hidden` | 30 | 30 | 1.000 | 1.000 | 0 | 0 | 0.000 | REQUEST_LABELS: 30 |
 
-### Interpretation
-We evaluated whether streaming detector and performance monitor outputs into the deterministic rules table selected the expected action across four synthetic operating conditions. In all 120 runs across 30 seeds, the selected action matched the rules table expectation with zero unnecessary retrain proposals; however, because the expected actions are defined by the same rules table and evaluated without LLM generation, this benchmark tests component routing rather than operational policy optimality.
+### Interpretation & Evaluation Caveats
+We evaluated whether streaming detector and performance monitor outputs into the deterministic rules table selected the expected action across four synthetic operating conditions. In all 120 runs across 30 seeds, the selected action matched the rules table expectation with zero unnecessary retrain proposals.
+
+**Caveats:**
+1. **Routing Check, Not Policy Optimality:** Evaluated as rules-only; expected actions come from the same rules table, so it is an end-to-end routing check and not an independent test of appropriateness.
+2. **Target Shift Dominance:** The "drift and degraded" scenario combines price drift with a target shift (label shift 1.8), so most of the performance drop comes from the target shift rather than input feature drift alone.
+3. **Pilot Calibration:** Scenario parameters were chosen after a 3-seed pilot so that each scenario premise holds.
+4. **LLM Layer Not Evaluated:** The LLM layer is implemented with a rule-based fallback but was not run or quantitatively evaluated in these benchmarks.
+
+---
+
+## Runtime Benchmarks and Platform Environment
+
+- **Development & Verification Environment:** The code was developed and tested on Windows 11 with Python 3.14.6 only. The project is a research prototype, not a production tool.
+- **Experimental Pipeline Execution Times:**
+  - The full 30-seed pipeline took roughly 40 minutes in the working folder.
+  - The `--quick` run (2 seeds) took 485 s in the fresh clone on the author's laptop.
+  - Note: Execution times vary by machine depending on processor and disk I/O.
 

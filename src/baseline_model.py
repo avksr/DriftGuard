@@ -6,8 +6,13 @@ Purpose: Trains, evaluates, and persists the baseline tabular regression model
 """
 
 import os
+import sys
 import json
 from typing import Dict, Any, Tuple, Optional
+
+# Ensure project root is on sys.path for direct script execution
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import yaml
 import joblib
 import pandas as pd

@@ -98,7 +98,7 @@ def _render_glossary() -> None:
         st.markdown(
             "- **Population Stability Index (PSI):** Measures the divergence between the reference distribution "
             "and incoming batch. Values below 0.10 indicate no change; 0.10 to 0.25 indicate moderate change; "
-            "0.25 and above indicate significant shift (flagged threshold).\n"
+            "0.25 and above indicate substantial shift (flagged threshold).\n"
             "- **Kolmogorov-Smirnov (KS) test:** Two-sample non-parametric statistical test comparing continuous feature distributions. "
             "A p-value below 0.01 indicates statistical significance.\n"
             "- **Full check:** Running the statistical tests across every feature of a batch.\n"

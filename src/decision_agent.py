@@ -210,7 +210,7 @@ def build_template_fallback(
             drift_facts.append(f"{feat} (PSI={psi:.4f})")
         facts = [
             f"Confirmed feature drift: {', '.join(drift_facts)}",
-            "Performance status: unverified (delayed production labels)"
+            "Performance status: unverified (delayed ground-truth labels)"
         ]
         explanations = [
             "Shifting customer or market distributions before outcome labels are recorded.",

@@ -45,7 +45,10 @@ flowchart TD
 
 ## Core Findings & Empirical Results
 
-The research question investigated is: **Can adaptive monitoring detect distribution drift almost as fast as checking every batch while running significantly fewer checks?**
+The research question investigated is: **Can adaptive monitoring detect distribution drift almost as fast as checking every batch while running far fewer checks?**
+
+**Answer (neutral summary):**
+Adaptive monitoring used 25% to 45% fewer full checks than checking every batch; it matched Fixed_1's delay on large sudden drift (1.0 batch), added about 2 batches on medium sudden drift (4.27 vs 2.37) and about 6 on medium gradual drift (13.30 vs 7.30), and was faster than Fixed_4 on all detected cases; it did not detect small drift under the default rule; no strategy produced false alarms in the no-drift runs.
 
 Experiments were evaluated across 30 random seeds (seeds 42 to 71) on sequences of 48 streaming batches ($N=300$).
 
@@ -127,7 +130,11 @@ Source: `results/experiment_d_summary.csv`
 | `perf_worse_no_drift` | `INVESTIGATE` | 1.000 (30 / 30) | 1.000 (30 / 30) | 0.000 (0 / 30) |
 | `drift_labels_hidden` | `REQUEST_LABELS` | 1.000 (30 / 30) | 1.000 (30 / 30) | 0.000 (0 / 30) |
 
-*Evaluation Scope:* In 120 of 120 runs across 30 seeds, the deterministic rules engine routed streaming inputs to the expected action. This evaluates that the pipeline components (detectors, performance monitor, rules table) operate coherently on constructed test cases. It does not measure the optimality of the actions themselves, and the optional LLM layer was not evaluated in this benchmark.
+*Evaluation Scope & Caveats:* In 120 of 120 runs across 30 seeds, the deterministic rules engine routed streaming inputs to the expected action with zero unnecessary retrain proposals. Note the evaluation boundaries:
+- Evaluated as rules-only; expected actions come from the same rules table, so this is an end-to-end component routing check and not an independent test of action appropriateness.
+- The "drift and degraded" scenario pairs price drift with a target shift (label shift 1.8), so most of the performance drop comes from the target shift.
+- Scenario parameters were chosen after a 3-seed pilot so that each scenario premise holds.
+- The optional LLM layer is implemented with a rule-based fallback but was not run or quantitatively evaluated in these benchmarks.
 
 ---
 
@@ -175,7 +182,7 @@ The interactive dashboard is implemented in [`app.py`](file:///c:/Users/avksr/DR
 ## Setup & Reproduction
 
 ### Prerequisites
-- Python 3.14.6 (tested platform: Windows 64-bit; compatible with Python 3.11+)
+- Python 3.14.6 (developed and tested on Windows 11 with Python 3.14.6 only; the project is a research prototype, not a production tool; compatible with Python 3.11+)
 - Git
 
 ### 1. Clone & Environment Setup
@@ -218,10 +225,10 @@ pytest tests/ -v
 
 ### 5. Run Research Experiments Pipeline
 ```bash
-# Quick smoke mode (2 seeds, runs in ~15 seconds):
+# Quick smoke mode (2 seeds, took 485 s in fresh clone on author's laptop):
 python experiments/run_all.py --quick
 
-# Full research pipeline (30 seeds):
+# Full research pipeline (30 seeds, took roughly 40 minutes in working folder; varies by machine):
 python experiments/run_all.py
 ```
 
@@ -295,5 +302,7 @@ DriftGuard/
 
 ## Author & License
 
-- **Author:** [Author Name]
+- **Author:** Avika Srivastava, B.Tech Computer Science and Engineering, Pranveer Singh Institute of Technology, Kanpur
+- **Roll Number:** [Roll Number]
+- **Supervisor:** [Supervisor Name]
 - **License:** MIT License (see [LICENSE](LICENSE) for details).

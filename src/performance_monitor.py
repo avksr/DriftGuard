@@ -125,7 +125,7 @@ class PerformanceMonitor:
             except Exception as exc:
                 logger.warning(f"Failed to load baseline model from {model_path}: {exc}")
 
-        # Case 1: Labels unavailable (ground truth not yet arrived in production)
+        # Case 1: Labels unavailable (ground truth not yet arrived in stream)
         if not labels_available or TARGET_COLUMN not in batch_df.columns:
             record = PerformanceRecord(
                 batch_id=batch_id,

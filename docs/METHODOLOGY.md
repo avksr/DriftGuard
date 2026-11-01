@@ -35,7 +35,7 @@ This document provides a comprehensive technical reference for the data processi
 ### 1.4 Reference and Clean Pool Split
 - Cleaned rows (8,900 rows) are randomly partitioned 50/50 using a fixed random seed (`random_seed: 42`):
   - **Reference Data:** 4,450 rows (used for baseline model training and reference distribution histograms/quantiles).
-  - **Clean Pool:** 4,450 rows (used by the batch simulator to sample streaming production batches).
+  - **Clean Pool:** 4,450 rows (used by the batch simulator to sample streaming batches). Note: the project is a research prototype, not a production tool.
 - The split is strictly disjoint and reproducible. Preprocessing transformations (such as brand frequency rankings and quantile bin edges) are computed exclusively on the reference data to prevent leakage.
 
 ---
@@ -167,6 +167,19 @@ All research benchmarks are run across 30 random seeds (seeds 42 to 71) with 48 
 - Evaluates whether detector ranking places truly perturbed features at the top of the list across 5 evaluation batches post-drift.
 - Metric: Precision@k = $\frac{\text{number of truly changed features in top } k}{k}$.
 - Evaluated across single-feature, two-feature, and three-feature drift scenarios.
+- **Rating Injection Protocol:** `product_rating` is always perturbed additively (-0.5, clipped to 1 to 5) in every scenario. Earlier multi-feature results were wrong because ratings had been multiplied (producing invalid rating values up to 7); the old files are archived in `results/archive/` (`experiment_c_old.csv`, `experiment_c_summary_old.csv`, `experiment_c_old.png`).
+- **Feature Noise Floor (Batch Size 300, 30 Clean Batches):**
+
+| Feature | Type | Mean Clean PSI | Max Clean PSI | Std Clean PSI |
+| :--- | :--- | :--- | :--- | :--- |
+| `product_main_category` | categorical | 0.0955 | 0.1438 | 0.0218 |
+| `BrandGroup` | categorical | 0.0399 | 0.1026 | 0.0201 |
+| `retail_price` | numeric | 0.0363 | 0.0937 | 0.0172 |
+| `product_rating` | numeric | 0.0148 | 0.0354 | 0.0099 |
+| `Region` | categorical | 0.0098 | 0.0405 | 0.0082 |
+| `OrderMonth` | categorical | 0.0083 | 0.0245 | 0.0070 |
+
+*Note on PSI Comparability:* Raw PSI is not comparable across features with different numbers of categories or feature types, and was not normalised in this implementation. High-cardinality categorical features naturally exhibit higher baseline sampling noise than bounded numerical features.
 
 ### Experiment D: End-to-End Decision Agent Evaluation
 - Evaluates whether the decision agent selects the expected action across four streaming scenarios (batches 16 to 21):
@@ -174,6 +187,11 @@ All research benchmarks are run across 30 random seeds (seeds 42 to 71) with 48 
   2. `drift_and_degraded`: Feature drift on `retail_price` + concept shift (1.8x) $\implies$ `PROPOSE_RETRAIN`.
   3. `perf_worse_no_drift`: Concept shift without feature drift $\implies$ `INVESTIGATE`.
   4. `drift_labels_hidden`: Feature drift on `retail_price` with hidden ground-truth labels $\implies$ `REQUEST_LABELS`.
+- **Evaluation Caveats:**
+  - Evaluated as rules-only; expected actions come from the same rules table, so it is an end-to-end routing check and not an independent test of appropriateness.
+  - The "drift and degraded" scenario combines price drift with a target shift (label shift 1.8), so most of the performance drop comes from the target shift.
+  - Scenario parameters were chosen after a 3-seed pilot so that each scenario premise holds.
+  - The LLM layer is implemented with a rule-based fallback but was not quantitatively evaluated.
 
 ---
 
@@ -184,13 +202,13 @@ All research benchmarks are run across 30 random seeds (seeds 42 to 71) with 48 
 | **Reference Split Fraction** | `data.reference_fraction` | 0.50 | 50% reference, 50% clean streaming pool |
 | **Top Brands Grouped** | `data.top_brands` | 10 | Top 10 brands retained, remainder to `Other` |
 | **Baseline Train Split** | `data.baseline_train_fraction`| 0.80 | 80% train / 20% validation on reference |
-| **Batch Size** | `batch_size` | 300 | Rows per streaming production batch |
+| **Batch Size** | `batch_size` | 300 | Rows per streaming batch |
 | **Batches per Run** | `n_batches_per_run` | 48 | Batches in one full temporal stream |
 | **Drift Start Batch** | `drift_start_batch` | 16 | 0-indexed batch where perturbation starts |
 | **Gradual Ramp Batches** | `gradual_ramp_batches` | 8 | Batches over which gradual drift linearly ramps |
 | **Default Flag Rule** | `drift_rule` | `both` | Requires KS p-value $< 0.01$ and PSI $\ge 0.25$ |
 | **PSI Quantile Bins** | `psi_bins` | 10 | Decile binning on reference distribution |
-| **PSI Flag Threshold** | `psi_flag_threshold` | 0.25 | Significant distributional divergence cutoff |
+| **PSI Flag Threshold** | `psi_flag_threshold` | 0.25 | Distributional divergence threshold |
 | **p-value Threshold** | `p_value_threshold` | 0.01 | Significance level for KS and $\chi^2$ tests |
 | **Persistence Required** | `persistence_required` | 2 | Consecutive flagged checks for confirmed alert |
 | **Normal Interval** | `adaptive.normal_interval` | 4 | Batches between checks in normal mode |
@@ -204,4 +222,14 @@ All research benchmarks are run across 30 random seeds (seeds 42 to 71) with 48 
 | **Small Drift Sizes** | `drift_sizes.small` | Price $\times 1.15$, Drop 0.10, Rating $-0.2$ | Mild perturbation |
 | **Medium Drift Sizes** | `drift_sizes.medium` | Price $\times 1.40$, Drop 0.25, Rating $-0.5$ | Standard benchmark perturbation |
 | **Large Drift Sizes** | `drift_sizes.large` | Price $\times 2.00$, Drop 0.45, Rating $-1.0$ | Severe perturbation |
+
+---
+
+## 9. Runtime Benchmarks and Platform Environment
+
+- **Development & Verification Environment:** The code was developed and tested on Windows 11 with Python 3.14.6 only. The project is a research prototype, not a production tool.
+- **Experimental Pipeline Execution Times:**
+  - The full 30-seed pipeline took roughly 40 minutes in the working folder.
+  - The `--quick` run (2 seeds) took 485 s in the fresh clone on the author's laptop.
+  - Note: Execution times vary by machine depending on disk I/O and processor specifications.
 

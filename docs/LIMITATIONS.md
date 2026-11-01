@@ -11,7 +11,7 @@ This document outlines the architectural boundaries, statistical constraints, an
 - The dataset carries no explicit commercial license. It is utilized strictly for academic research, benchmarking, and demonstration purposes. Generalizability to other domains (such as healthcare, financial fraud, or high-dimensional tabular systems) cannot be inferred from these results.
 
 ### 1.2 Synthetic Sampling from a Finite Clean Pool
-- Because production deployments encounter open streaming distributions, this evaluation simulates production streams by sampling batches of $N=300$ rows with replacement from a clean pool of 4,450 rows.
+- Because live deployments encounter open streaming distributions, this evaluation simulates streaming batches by sampling batches of $N=300$ rows with replacement from a clean pool of 4,450 rows (the project is a research prototype, not a production tool).
 - Consequently, individual rows repeat across batches over a 48-batch stream. While batch-to-batch composition varies, the sampling pool cannot model true continuous covariate emergence or open-world cardinality expansion.
 
 ### 1.3 `product_rating` Column Distributional Concern
@@ -33,7 +33,7 @@ This document outlines the architectural boundaries, statistical constraints, an
   - Bounded additive displacement (`shift_additive`)
   - Categorical mode reassignment (`shift_category_mix`)
   - Concept shift (`label_shift`)
-- Real-world production drift often manifests as complex, non-linear interactions across multiple features simultaneously (e.g. seasonal promotional surges coupled with localized supply chain disruptions), which are not fully captured by single-variable or additive synthetic shifts.
+- Real-world data drift often manifests as complex, non-linear interactions across multiple features simultaneously (e.g. seasonal promotional surges coupled with localized supply chain disruptions), which are not fully captured by single-variable or additive synthetic shifts.
 
 ### 2.2 Sensitivity to Hard Thresholds and Batch Sizes
 - The empirical findings are dependent on the configured parameters:
@@ -57,13 +57,15 @@ This document outlines the architectural boundaries, statistical constraints, an
 
 ### 3.1 Un-Evaluated LLM Explanation Layer
 - The system includes a hybrid decision architecture with an optional Large Language Model (LLM) explanation layer and structured JSON output parser.
-- Due to lack of access to an active external API key and cost constraints, the LLM layer was not evaluated in the 30-seed automated benchmarks. All decision and retraining evaluations were executed using the deterministic 6-row rules engine fallback.
+- The LLM layer is implemented with a rule-based fallback but was not quantitatively evaluated. Due to lack of access to an active external API key and cost constraints, the LLM layer was not evaluated in the 30-seed automated benchmarks. All decision and retraining evaluations were executed using the deterministic 6-row rules engine fallback.
 
 ### 3.2 Evaluation Scope of Experiment D
-- Experiment D evaluates the decision pipeline across four synthetic scenarios where drift and performance degradation signals were constructed not to conflict.
-- Because the expected actions were derived from the same rules table that governs the agent, Experiment D demonstrates component routing coherence across the detector, performance monitor, and decision engine, but does not measure whether the selected operational actions represent optimal business policies.
+- Experiment D was evaluated as a rules-only benchmark; expected actions come from the same rules table, so it is an end-to-end routing check and not an independent test of appropriateness.
+- The "drift and degraded" scenario combines price drift with a target shift (label shift 1.8), so most of the performance drop comes from the target shift rather than input feature drift alone.
+- Scenario parameters were chosen after a 3-seed pilot so that each scenario premise holds.
+- The LLM layer was not run or evaluated.
 
 ### 3.3 Platform & Runtime Testing
-- All automated tests, benchmarks, and dashboard executions were validated exclusively on Windows 11 64-bit under Python 3.14.6.
+- The code was developed and tested on Windows 11 with Python 3.14.6 only. The project is a research prototype, not a production tool.
 - Cross-platform behavior on Linux/macOS and containerized environments has not been verified in continuous integration.
 

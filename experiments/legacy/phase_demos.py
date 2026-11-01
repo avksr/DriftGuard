@@ -1,6 +1,6 @@
 """
 Legacy interactive phase demos (Phase 6 and Phase 7).
-Moved out of library source modules to maintain clean production boundaries.
+Moved out of library source modules to maintain clean codebase boundaries (the project is a research prototype, not a production tool).
 """
 
 import os

@@ -19,7 +19,7 @@ This document provides two-sentence module summaries with key design decisions, 
 - **Main Design Decision:** Built detectors entirely from scratch rather than wrapping existing libraries (e.g. Evidently or Alibi Detect) to guarantee complete visibility and interview explainability for every statistical computation.
 
 ### `src/batch_simulator.py`
-- **Explanation:** Samples consecutive production batches from the clean pool and injects mathematically controlled perturbations across sudden, gradual, spread, and mix types. It attaches exact ground truth metadata (drift multiplier, affected columns) to every batch for empirical benchmarking.
+- **Explanation:** Samples consecutive streaming batches from the clean pool and injects mathematically controlled perturbations across sudden, gradual, spread, and mix types. It attaches exact ground truth metadata (drift multiplier, affected columns) to every batch for empirical benchmarking.
 - **Main Design Decision:** Enforced feature-specific domain bounds during injection (such as keeping prices strictly positive and clamping ratings within $[1.0, 5.0]$) to prevent unphysical distribution artifacts.
 
 ### `src/adaptive_monitor.py`
@@ -67,7 +67,7 @@ This document provides two-sentence module summaries with key design decisions, 
 **Answer:** Under gradual drift, the perturbation ramps linearly from 0 to 1 over 8 batches. In the early ramp batches (batches 16–20), the distribution shift is small, generating a PSI below the 0.25 threshold. Because Adaptive checks only every 4th batch in normal mode, it does not collapse its interval to every batch until a check is flagged, causing it to observe the drift later in the ramp cycle ($13.3$ batches delay vs $7.3$ for Fixed_1).
 
 ### Q5: What does the `product_rating` noise-floor finding reveal about raw PSI?
-**Answer:** When rating drift shifted `product_rating` by $-0.5$, its PSI reached only $0.01$ to $0.04$, while clean sampling noise in `product_main_category` produced a mean baseline PSI of $0.0955$ and max of $0.1438$. This demonstrates that raw PSI is not comparable across features with different numbers of categories or discrete values; high-cardinality categorical features naturally exhibit higher baseline PSI fluctuations under pure sampling noise than bounded numerical features.
+**Answer:** When rating drift shifted `product_rating` by $-0.5$, its PSI reached only $0.01$ to $0.04$, while clean sampling noise in `product_main_category` produced a mean baseline PSI of $0.0955$ and max of $0.1438$. This shows that raw PSI is not comparable across features with different numbers of categories or discrete values; high-cardinality categorical features naturally exhibit higher baseline PSI fluctuations under pure sampling noise than bounded numerical features.
 
 ### Q6: Why is Experiment D evaluated as rules-only, and what does it not show?
 **Answer:** Experiment D was run with rules-only because the primary architectural goal was verifying deterministic routing logic across the pipeline without external API dependencies or non-deterministic variance. It shows that streaming detector and performance monitor signals correctly trigger expected actions (120 of 120 runs matched), but it does not evaluate whether the rules themselves represent an optimal business policy, nor does it benchmark LLM text generation quality.
@@ -89,8 +89,8 @@ This document provides two-sentence module summaries with key design decisions, 
 1. Normalized PSI: Scale raw PSI by feature degrees of freedom or bootstrap empirical p-values so feature rankings are comparable across continuous and high-cardinality columns.
 2. Exponentially Weighted Moving Average (EWMA) persistence: Replace the fragile hard-reset counter with an EWMA or CUSUM statistic to eliminate boundary flip-flops.
 3. Multi-testing FDR control: Implement Benjamini-Hochberg False Discovery Rate corrections across simultaneous feature tests.
-4. Production Kafka/FastAPI streaming harness: Wrap the pipeline in an asynchronous microservice with Redis state caching for production deployment.
+4. Streaming service integration: Wrap the pipeline in an asynchronous microservice with Redis state caching if expanding beyond this prototype (the project is a research prototype, not a production tool).
 
 ### Q12: How was the AI coding assistant utilized during development, and what guardrails did you enforce?
-**Answer:** The assistant was used as an autonomous pair-programmer for scaffolding, test writing, and running reproducible benchmarks. Strict ground rules were enforced: all claims required empirical evidence from executed terminal commands, no statistical thresholds were altered to artificially improve numbers, all results were read directly from generated CSV files, and UI constraints (zero emojis, single accent color, no marketing hype) were enforced to maintain production-grade engineering standards.
+**Answer:** The assistant was used as an autonomous pair-programmer for scaffolding, test writing, and running reproducible benchmarks. Strict ground rules were enforced: all claims required empirical evidence from executed terminal commands, no statistical thresholds were altered to artificially improve numbers, all results were read directly from generated CSV files, and UI constraints (zero emojis, single accent color, no marketing hype) were enforced to maintain rigorous engineering standards for this research prototype, which is not a production tool.
 
