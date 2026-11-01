@@ -1,5 +1,5 @@
-scenario,use_llm,correct_action_mean,correct_action_std,unnecessary_retrain_mean,unnecessary_retrain_std,guardrail_overridden_mean,guardrail_overridden_std
-drift_and_degraded,0,0.0,0.0,0.0,0.0,0.0,0.0
-drift_labels_hidden,0,0.5,0.5085476277156078,0.0,0.0,0.0,0.0
-drift_perf_fine,0,0.0,0.0,0.0,0.0,0.0,0.0
-perf_worse_no_drift,0,0.0,0.0,0.0,0.0,0.0,0.0
+scenario,total_runs,premise_ok_runs,match_rate_all,match_rate_premise_ok,propose_retrain_total,propose_retrain_expected,unnecessary_retrain,chosen_action_counts
+drift_perf_fine,30,30,1.0,1.0,0,0,0,INVESTIGATE:30
+drift_and_degraded,30,30,1.0,1.0,30,30,0,PROPOSE_RETRAIN:30
+perf_worse_no_drift,30,30,1.0,1.0,0,0,0,INVESTIGATE:30
+drift_labels_hidden,30,30,1.0,1.0,0,0,0,REQUEST_LABELS:30

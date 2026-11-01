@@ -1,14 +1,11 @@
 {
-  "timestamp_utc": "2026-11-01T09:06:52.476540+00:00",
-  "completed_utc": "2026-11-01T09:07:27.768722+00:00",
-  "git_commit": "873f8dbc19901089084712ae827b5ec777df8188",
+  "timestamp_utc": "2026-11-01T09:33:26.762601+00:00",
+  "completed_utc": "2026-11-01T09:34:14.884680+00:00",
+  "git_commit": "6588fa40fbfaef6a16ac960135f4c69f2918e2af",
   "number_of_seeds": 30,
   "runtimes_seconds": {
-    "experiment_a_seconds": 1935.12,
-    "experiment_b_seconds": 961.89,
-    "experiment_c_seconds": 107.0,
-    "experiment_d_seconds": 33.5,
-    "total_seconds": 35.29
+    "experiment_d_seconds": 47.52,
+    "total_seconds": 48.12
   },
   "configuration": {
     "random_seed": 42,
@@ -78,6 +75,49 @@
         "price_factor": 2.0,
         "category_share_drop": 0.45,
         "rating_shift": -1.0
+      }
+    },
+    "experiment_d": {
+      "eval_batch_offset": 5,
+      "scenarios": {
+        "drift_perf_fine": {
+          "drift_type": "shift_category_mix",
+          "drift_size": "large",
+          "affected_features": [
+            "Region"
+          ],
+          "label_shift_factor": null,
+          "labels_available": true,
+          "expected_action": "INVESTIGATE"
+        },
+        "drift_and_degraded": {
+          "drift_type": "shift_mean",
+          "drift_size": "large",
+          "affected_features": [
+            "retail_price"
+          ],
+          "label_shift_factor": 1.8,
+          "labels_available": true,
+          "expected_action": "PROPOSE_RETRAIN"
+        },
+        "perf_worse_no_drift": {
+          "drift_type": "label_shift",
+          "drift_size": "large",
+          "affected_features": null,
+          "label_shift_factor": 1.8,
+          "labels_available": true,
+          "expected_action": "INVESTIGATE"
+        },
+        "drift_labels_hidden": {
+          "drift_type": "shift_mean",
+          "drift_size": "large",
+          "affected_features": [
+            "retail_price"
+          ],
+          "label_shift_factor": null,
+          "labels_available": false,
+          "expected_action": "REQUEST_LABELS"
+        }
       }
     }
   }
