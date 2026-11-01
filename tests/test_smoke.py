@@ -129,36 +129,33 @@ def test_smoke_micro_experiment_d():
     cfg = load_config("config.yaml")
     cfg = dict(cfg)
     cfg["_current_seed"] = 42
-    cfg["n_batches_per_run"] = 4
+    cfg["n_batches_per_run"] = 8
     cfg["batch_size"] = 50
     cfg["drift_start_batch"] = 2
-    cfg["gradual_ramp_batches"] = 2
+    cfg["experiment_d"] = {
+        "eval_batch_offset": 2,
+    }
 
-    orig_scenarios = exp_d._SCENARIOS
-    try:
-        exp_d._SCENARIOS = [
-            {
-                "label": "smoke_drift_perf_fine",
-                "description": "Drift detected, performance fine",
-                "drift_type": "shift_additive",
-                "drift_size": "small",
-                "drift_shape": "sudden",
-                "labels_available": True,
-                "label_shift_factor": None,
-                "expected_action": "INVESTIGATE",
-            }
-        ]
-        # Only run rules-only (use_llm=False)
-        rec = exp_d._run_scenario(
-            ref_df=pd.read_csv("data/reference_data.csv").head(100),
-            pool_df=pd.read_csv("data/clean_pool.csv").head(100),
-            cfg=cfg,
-            scenario=exp_d._SCENARIOS[0],
-            use_llm=False,
-            seed=42
-        )
-        assert rec["correct_action"] == 1
-        assert rec["chosen_action"] == "INVESTIGATE"
-    finally:
-        exp_d._SCENARIOS = orig_scenarios
+    test_scenario = {
+        "label": "drift_perf_fine",
+        "description": "Drift detected, performance fine",
+        "drift_type": "shift_category_mix",
+        "drift_size": "large",
+        "affected_features": ["Region"],
+        "labels_available": True,
+        "label_shift_factor": None,
+        "expected_action": "INVESTIGATE",
+    }
+    rec = exp_d._run_scenario(
+        ref_df=pd.read_csv("data/reference_data.csv").head(100),
+        pool_df=pd.read_csv("data/clean_pool.csv").head(200),
+        cfg=cfg,
+        scenario=test_scenario,
+        use_llm=False,
+        seed=42
+    )
+    assert "chosen_action" in rec
+    assert "premise_ok" in rec
+    assert rec["chosen_action"] == "INVESTIGATE"
+    assert rec["correct_action"] == 1
 

@@ -250,29 +250,56 @@ def summarize_and_plot_c(df: pd.DataFrame, results_dir: Path) -> pd.DataFrame:
 
 def summarize_and_plot_d(df: pd.DataFrame, results_dir: Path) -> pd.DataFrame:
     """Generate summary CSV and PNG plot for Experiment D."""
-    group_cols = ["scenario", "use_llm"]
-    numeric_cols = ["correct_action", "unnecessary_retrain", "guardrail_overridden"]
+    summary_rows = []
+    scenarios = df["scenario"].unique()
+    for sc in scenarios:
+        sub = df[df["scenario"] == sc]
+        n_total = len(sub)
+        n_premise = int(sub["premise_ok"].sum()) if "premise_ok" in sub.columns else n_total
+        match_all = float(sub["correct_action"].mean())
+        premise_sub = sub[sub["premise_ok"] == 1] if "premise_ok" in sub.columns else sub
+        match_premise = float(premise_sub["correct_action"].mean()) if len(premise_sub) > 0 else float("nan")
 
-    agg_dict = {col: ["mean", "std"] for col in numeric_cols if col in df.columns}
-    summary_df = df.groupby(group_cols, as_index=False).agg(agg_dict)
-    summary_df.columns = [
-        f"{c[0]}_{c[1]}" if c[1] else c[0] for c in summary_df.columns
-    ]
+        action_counts = sub["chosen_action"].value_counts().to_dict()
+        action_counts_str = ", ".join(f"{k}:{v}" for k, v in action_counts.items())
+
+        n_retrain = int((sub["chosen_action"] == "PROPOSE_RETRAIN").sum())
+        n_retrain_expected = int(((sub["chosen_action"] == "PROPOSE_RETRAIN") & (sub["expected_action"] == "PROPOSE_RETRAIN")).sum())
+        unnecessary_retrain = int(((sub["chosen_action"] == "PROPOSE_RETRAIN") & (sub["expected_action"] != "PROPOSE_RETRAIN")).sum())
+
+        summary_rows.append({
+            "scenario": sc,
+            "total_runs": n_total,
+            "premise_ok_runs": n_premise,
+            "match_rate_all": round(match_all, 4),
+            "match_rate_premise_ok": round(match_premise, 4) if not np.isnan(match_premise) else np.nan,
+            "propose_retrain_total": n_retrain,
+            "propose_retrain_expected": n_retrain_expected,
+            "unnecessary_retrain": unnecessary_retrain,
+            "chosen_action_counts": action_counts_str,
+        })
+
+    summary_df = pd.DataFrame(summary_rows)
     summary_path = results_dir / "experiment_d_summary.csv"
     summary_df.to_csv(summary_path, index=False)
 
-    # Plot decision accuracy
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    scenarios = summary_df["scenario"].tolist()
-    acc = summary_df["correct_action_mean"].tolist()
-
+    # Plot decision accuracy among all runs and premise-ok runs
+    fig, ax = plt.subplots(figsize=(9, 4.5))
     x = np.arange(len(scenarios))
-    ax.bar(x, acc, color="#59a14f", alpha=0.85, width=0.4)
+    width = 0.35
+
+    all_acc = summary_df["match_rate_all"].tolist()
+    premise_acc = summary_df["match_rate_premise_ok"].fillna(0).tolist()
+
+    ax.bar(x - width / 2, all_acc, width, label="Match Rate (All Runs)", color="#4e79a7")
+    ax.bar(x + width / 2, premise_acc, width, label="Match Rate (Premise OK)", color="#59a14f")
+
     ax.set_ylim(0, 1.05)
-    ax.set_ylabel("Fraction Matching Expected Action")
-    ax.set_title("Experiment D: Decision Agent Quality (Rules-only)")
+    ax.set_ylabel("Action Match Rate")
+    ax.set_title("Experiment D: Decision Agent Action Accuracy by Scenario")
     ax.set_xticks(x)
-    ax.set_xticklabels(scenarios, rotation=25, ha="right")
+    ax.set_xticklabels(scenarios, rotation=20, ha="right")
+    ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.5)
     plt.tight_layout()
     plot_path = results_dir / "experiment_d.png"

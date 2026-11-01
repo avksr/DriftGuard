@@ -55,3 +55,36 @@ drift_sizes:
   small:  {price_factor: 1.15, category_share_drop: 0.10, rating_shift: -0.2}
   medium: {price_factor: 1.40, category_share_drop: 0.25, rating_shift: -0.5}
   large:  {price_factor: 2.00, category_share_drop: 0.45, rating_shift: -1.0}
+
+
+experiment_d:
+  eval_batch_offset: 5
+  scenarios:
+    drift_perf_fine:
+      drift_type: shift_category_mix
+      drift_size: large
+      affected_features: [Region]
+      label_shift_factor: null
+      labels_available: true
+      expected_action: INVESTIGATE
+    drift_and_degraded:
+      drift_type: shift_mean
+      drift_size: large
+      affected_features: [retail_price]
+      label_shift_factor: 1.8
+      labels_available: true
+      expected_action: PROPOSE_RETRAIN
+    perf_worse_no_drift:
+      drift_type: label_shift
+      drift_size: large
+      affected_features: null
+      label_shift_factor: 1.8
+      labels_available: true
+      expected_action: INVESTIGATE
+    drift_labels_hidden:
+      drift_type: shift_mean
+      drift_size: large
+      affected_features: [retail_price]
+      label_shift_factor: null
+      labels_available: false
+      expected_action: REQUEST_LABELS

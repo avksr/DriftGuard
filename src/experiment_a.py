@@ -32,9 +32,13 @@ from src.drift_detector import detect_drift
 # ---------------------------------------------------------------------------
 
 _SCENARIOS: List[Dict[str, Any]] = [
-    # ── No drift baseline ──────────────────────────────────────────────────
+    # ── No drift baselines across batch sizes ──────────────────────────────
     {"drift_type": "none",         "drift_size": "medium", "drift_shape": "sudden",
      "scenario_label": "no_drift", "batch_size_override": 300},
+    {"drift_type": "none",         "drift_size": "medium", "drift_shape": "sudden",
+     "scenario_label": "no_drift_bs150", "batch_size_override": 150},
+    {"drift_type": "none",         "drift_size": "medium", "drift_shape": "sudden",
+     "scenario_label": "no_drift_bs600", "batch_size_override": 600},
 
     # ── Single feature, three sizes, sudden ──────────────────────────────
     {"drift_type": "shift_mean",   "drift_size": "small",  "drift_shape": "sudden",
