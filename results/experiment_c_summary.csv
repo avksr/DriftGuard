@@ -4,5 +4,5 @@ scenario,precision_at_k_mean,precision_at_k_std,precision_at_k_std_mean,rank1_co
 1feat_price_medium_sudden,1.0,0.0,0.0,1.0,0.0,5.0
 1feat_rating_medium_sudden,0.0,0.0,0.0,0.0,0.0,5.0
 1feat_region_medium_sudden,1.0,0.0,0.0,1.0,0.0,5.0
-2feat_price_rating_medium_sudden,1.0,0.0,0.0,,,5.0
-3feat_price_rating_region_medium_sudden,1.0,0.0,0.0,,,5.0
+2feat_price_rating_medium_sudden,0.5,0.0,0.0,,,5.0
+3feat_price_rating_region_medium_sudden,0.6667,0.0,0.0,,,5.0

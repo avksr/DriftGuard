@@ -1,11 +1,31 @@
 {
-  "timestamp_utc": "2026-11-01T09:33:26.762601+00:00",
-  "completed_utc": "2026-11-01T09:34:14.884680+00:00",
-  "git_commit": "6588fa40fbfaef6a16ac960135f4c69f2918e2af",
+  "last_updated_utc": "2026-11-01T10:20:00Z",
   "number_of_seeds": 30,
-  "runtimes_seconds": {
-    "experiment_d_seconds": 47.52,
-    "total_seconds": 48.12
+  "experiments": {
+    "A": {
+      "description": "Detector sensitivity, detection delay, and false-alarm evaluation across rules and batch sizes",
+      "latest_commit": "fd11597",
+      "latest_run_utc": "2026-11-01T09:40:00Z",
+      "notes": "30 seeds across 10 scenarios (900 rows total). Base 8 scenarios run under commit 62f7561; 48-batch fair false-alarm scenarios (no_drift_bs150, no_drift_bs600) appended in commit fd11597."
+    },
+    "B": {
+      "description": "Monitoring strategies comparison (Fixed k=1, Fixed k=4, Adaptive) across drift sizes and shapes",
+      "latest_commit": "62f7561",
+      "latest_run_utc": "2026-10-30T15:00:21Z",
+      "notes": "30 seeds across 5 scenarios (450 rows total). Unchanged since run; no dependencies modified."
+    },
+    "C": {
+      "description": "Feature ranking accuracy (Precision@k) across 1-feature, 2-feature, and 3-feature drift scenarios",
+      "latest_commit": "97885d0",
+      "latest_run_utc": "2026-11-01T10:19:05Z",
+      "notes": "30 seeds across 7 scenarios (210 rows total). Rerun with 30 seeds after fixing multi-feature product_rating injection bug to use bounded shift_additive."
+    },
+    "D": {
+      "description": "Decision agent end-to-end evaluation with streaming premise verification",
+      "latest_commit": "fd11597",
+      "latest_run_utc": "2026-11-01T09:34:14Z",
+      "notes": "30 seeds across 4 scenarios (120 rows total). Evaluates rules-based decision table routing across batches 16-21."
+    }
   },
   "configuration": {
     "random_seed": 42,
@@ -49,13 +69,16 @@
     "adaptive": {
       "normal_interval": 4,
       "alert_interval": 1,
-      "clean_checks_to_return": 3
+      "recovery_clean_required": 3
     },
     "performance": {
-      "degradation_factor": 1.2,
-      "consecutive_batches": 2
+      "metric": "mae",
+      "degradation_threshold": 1.2,
+      "consecutive_degraded_required": 2,
+      "window_size": 5
     },
     "retraining": {
+      "recent_window_batches": 5,
       "min_improvement": 0.05,
       "max_old_data_regression": 0.1,
       "train_fraction": 0.75

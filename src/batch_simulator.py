@@ -221,6 +221,13 @@ def apply_drift_to_batch(
             df[feat] = shift_category_mix(df[feat], drop=effective_drop, random_state=random_state)
             continue
 
+        if feat == "product_rating":
+            # Rating feature must always stay bounded within [1.0, 5.0] using additive shift
+            target_delta = float(drift_params.get("rating_shift", -0.5))
+            effective_delta = target_delta * multiplier
+            df[feat] = shift_additive(df[feat], effective_delta, min_val=1.0, max_val=5.0)
+            continue
+
         if drift_type == "shift_mean":
             target_factor = float(drift_params.get("price_factor", 1.40))
             # Linear interpolation of factor from 1.0 to target_factor
