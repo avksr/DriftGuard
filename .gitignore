@@ -24,6 +24,7 @@ htmlcov/
 
 # Streamlit
 .streamlit/
+!.streamlit/config.toml
 
 # OS and IDE files
 .DS_Store
