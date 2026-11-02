@@ -46,6 +46,16 @@ from src.quality_checks import check_batch_quality
 from src.adaptive_monitor import FixedMonitor, AdaptiveMonitor
 from src.performance_monitor import PerformanceMonitor
 
+# Decision rules table for Tab 3 highlighting
+RULES_TABLE = [
+    {"row": 1, "quality": "Failed",  "drift": "Any",   "perf": "Any",        "action": "INVESTIGATE",     "allowed": ["INVESTIGATE"]},
+    {"row": 2, "quality": "Passed",  "drift": "True",  "perf": "Unverified", "action": "REQUEST_LABELS",  "allowed": ["REQUEST_LABELS", "INVESTIGATE"]},
+    {"row": 3, "quality": "Passed",  "drift": "True",  "perf": "Normal",     "action": "INVESTIGATE",     "allowed": ["INVESTIGATE", "DO_NOTHING"]},
+    {"row": 4, "quality": "Passed",  "drift": "True",  "perf": "Degraded",   "action": "PROPOSE_RETRAIN", "allowed": ["PROPOSE_RETRAIN", "INVESTIGATE"]},
+    {"row": 5, "quality": "Passed",  "drift": "False", "perf": "Degraded",   "action": "INVESTIGATE",     "allowed": ["INVESTIGATE", "DO_NOTHING"]},
+    {"row": 6, "quality": "Passed",  "drift": "False", "perf": "Normal",     "action": "DO_NOTHING",      "allowed": ["DO_NOTHING"]},
+]
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Cached Resource and Data Loaders
@@ -380,10 +390,19 @@ def _tab_live_simulation() -> None:
     for col, m in zip(cols, [m_f1, m_f4, m_ad]):
         with col:
             st.markdown(f"**{m['strategy']}**")
-            st.write(f"First confirmed alert: {m['first_alert'] if m['first_alert'] is not None else 'None'}")
-            st.write(f"Detection delay: {m['delay'] if m['delay'] is not None else 'N/A'}")
-            st.write(f"Full checks: {m['checks']} / 48")
-            st.write(f"Checks saved vs Fixed(1): {m['saved_pct']}%")
+            st.metric(
+                label="Full checks executed",
+                value=f"{m['checks']} / 48",
+                delta=f"-{m['saved_pct']}% vs Fixed(1)" if m['saved_pct'] > 0 else "Baseline",
+                delta_color="normal" if m['saved_pct'] > 0 else "off",
+            )
+            delay_str = f"{m['delay']} batches" if m['delay'] is not None else "No alert"
+            st.metric(
+                label="Detection delay",
+                value=delay_str,
+                delta=f"Alert at batch {m['first_alert']}" if m['first_alert'] is not None else "Clean",
+                delta_color="off",
+            )
 
     # ── Timeline Chart ───────────────────────────────────────────────────────
     st.markdown("#### Monitoring timeline by strategy")
@@ -504,6 +523,62 @@ def _tab_live_simulation() -> None:
         st.plotly_chart(fig_mae, use_container_width=True)
     else:
         st.info("Labels unavailable: model error is unverified for this run.")
+
+    # ── Interactive Stream Stepper ───────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("#### Interactive stream step-through")
+    st.caption("Scrub through the 48-batch sequence to observe how the Adaptive monitor transitions between Normal and Alert modes.")
+
+    step_b = st.slider("Inspect batch state across strategies", 0, n_batches - 1, min(18, n_batches - 1), key="stream_step_slider")
+
+    f1_row = df_f1[df_f1["batch"] == step_b].iloc[0] if not df_f1[df_f1["batch"] == step_b].empty else None
+    f4_row = df_f4[df_f4["batch"] == step_b].iloc[0] if not df_f4[df_f4["batch"] == step_b].empty else None
+    ad_row = df_ad[df_ad["batch"] == step_b].iloc[0] if not df_ad[df_ad["batch"] == step_b].empty else None
+
+    c_s1, c_s2, c_s3 = st.columns(3)
+    with c_s1:
+        st.markdown("**Fixed(1)**")
+        if f1_row is not None and f1_row["check_executed"]:
+            if f1_row["confirmed_alert"]:
+                st.error("Confirmed Alert")
+            elif f1_row["flagged"]:
+                st.warning("Flagged Check")
+            else:
+                st.success("Clean Check")
+            st.caption(f"Top PSI: {f1_row['top_psi']:.4f}")
+
+    with c_s2:
+        st.markdown("**Fixed(4)**")
+        if f4_row is not None:
+            if f4_row["check_executed"]:
+                if f4_row["confirmed_alert"]:
+                    st.error("Confirmed Alert")
+                elif f4_row["flagged"]:
+                    st.warning("Flagged Check")
+                else:
+                    st.success("Clean Check")
+                st.caption(f"Top PSI: {f4_row['top_psi']:.4f}")
+            else:
+                st.info("Check Skipped")
+                next_c = ((step_b // 4) + 1) * 4
+                st.caption(f"Scheduled at batch {next_c}")
+
+    with c_s3:
+        st.markdown("**Adaptive(4,1,3)**")
+        if ad_row is not None:
+            ad_mode = ad_row.get("mode", "NORMAL")
+            if ad_row["check_executed"]:
+                if ad_row["confirmed_alert"]:
+                    st.error(f"Confirmed Alert ({ad_mode})")
+                elif ad_row["flagged"]:
+                    st.warning(f"Flagged ({ad_mode})")
+                else:
+                    st.success(f"Clean Check ({ad_mode})")
+                int_str = "1 batch" if ad_mode == "ALERT" else "4 batches"
+                st.caption(f"Top PSI: {ad_row['top_psi']:.4f} | Interval: {int_str}")
+            else:
+                st.info(f"Check Skipped ({ad_mode})")
+                st.caption("Interval: 4 batches (Normal)")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -687,6 +762,14 @@ def _tab_decisions() -> None:
     )
     st.markdown("Rule-based summaries are in use when no API key is present.")
 
+    # ── Interactive rules matrix ─────────────────────────────────────────────
+    with st.expander("Decision rules matrix (6-row deterministic table)"):
+        st.caption("Each incident is routed through this table. Click an incident below to see which row matched.")
+        rules_df = pd.DataFrame(RULES_TABLE)
+        rules_df.columns = ["Row", "Quality", "Drift", "Performance", "Default Action", "Allowed Actions"]
+        rules_df["Allowed Actions"] = rules_df["Allowed Actions"].apply(lambda x: ", ".join(x))
+        st.dataframe(rules_df, use_container_width=True, hide_index=True)
+
     incidents_csv = RESULTS_DIR / "incidents.csv"
     incidents_json = RESULTS_DIR / "incidents.json"
     df_inc = get_cached_csv(str(incidents_csv))
@@ -845,6 +928,15 @@ def _tab_experiment_results() -> None:
         index=1,
         help="Choose experiment to inspect data table and summary chart.",
     )
+
+    takeaways = {
+        "A": "**Key finding:** The combined rule `both` (KS p-value < 0.01 AND PSI >= 0.25) produced 0 false alarms observed in 30 runs across all batch sizes, while `psi_only` triggered 3.3 false alarms per run at N=150 due to quantile-binning instability.",
+        "B": "**Key finding:** Adaptive monitoring matched Fixed(1)'s 1.0-batch delay on large sudden drift while saving 25% of checks; added ~2 batches on medium sudden drift while saving 33.1% of checks; and saved 45.4% on gradual drift. Fixed(4) missed 10% of gradual drift runs.",
+        "C": "**Key finding:** Feature ranking achieved 1.000 precision@1 for `retail_price` and `Region`, but 0.000 for `product_rating` because rating drift was subtle and fell below the clean sampling noise floor of categorical columns (mean clean PSI = 0.0955).",
+        "D": "**Key finding:** In 120/120 runs across 30 seeds, the deterministic rules engine routed streaming inputs to the expected action with zero unnecessary retrain proposals. Evaluated as a component routing check; the LLM layer was not evaluated.",
+    }
+    if exp_choice in takeaways:
+        st.info(takeaways[exp_choice])
 
     csv_path = RESULTS_DIR / f"experiment_{exp_choice.lower()}_summary.csv"
     png_path = RESULTS_DIR / f"experiment_{exp_choice.lower()}.png"
