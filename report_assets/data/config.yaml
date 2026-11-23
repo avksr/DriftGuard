@@ -1,0 +1,90 @@
+random_seed: 42
+experiment_repeats: 30
+data:
+  csv_path: data/E-Commerce.csv
+  target: discount_pct       # fallback: delivery_days (see Section 4.5)
+  reference_fraction: 0.5
+  top_brands: 10
+  baseline_train_fraction: 0.8
+
+model:
+  type: RandomForestRegressor
+  n_estimators: 100
+  random_state: 42
+  model_path: models/baseline_model.joblib
+  metrics_path: models/baseline_metrics.json
+  ref_val_path: models/reference_val_data.csv
+
+quality:
+  max_missing_fraction: 0.10
+  unseen_category_tolerance: 0.05
+  expected_features:
+    - retail_price
+    - product_rating
+    - Region
+    - product_main_category
+    - BrandGroup
+    - OrderMonth
+
+batch_size: 300
+n_batches_per_run: 48
+drift_start_batch: 16
+gradual_ramp_batches: 8
+
+drift_rule: both          # ks_only | psi_only | both
+psi_bins: 10
+psi_flag_threshold: 0.25
+p_value_threshold: 0.01
+persistence_required: 2   # flagged checks in a row = confirmed alert
+
+adaptive:
+  normal_interval: 4
+  alert_interval: 1
+  clean_checks_to_return: 3
+
+performance:
+  degradation_factor: 1.2
+  consecutive_batches: 2
+
+retraining:
+  min_improvement: 0.05
+  max_old_data_regression: 0.10
+  train_fraction: 0.75
+
+drift_sizes:
+  small:  {price_factor: 1.15, category_share_drop: 0.10, rating_shift: -0.2}
+  medium: {price_factor: 1.40, category_share_drop: 0.25, rating_shift: -0.5}
+  large:  {price_factor: 2.00, category_share_drop: 0.45, rating_shift: -1.0}
+
+
+experiment_d:
+  eval_batch_offset: 5
+  scenarios:
+    drift_perf_fine:
+      drift_type: shift_category_mix
+      drift_size: large
+      affected_features: [Region]
+      label_shift_factor: null
+      labels_available: true
+      expected_action: INVESTIGATE
+    drift_and_degraded:
+      drift_type: shift_mean
+      drift_size: large
+      affected_features: [retail_price]
+      label_shift_factor: 1.8
+      labels_available: true
+      expected_action: PROPOSE_RETRAIN
+    perf_worse_no_drift:
+      drift_type: label_shift
+      drift_size: large
+      affected_features: null
+      label_shift_factor: 1.8
+      labels_available: true
+      expected_action: INVESTIGATE
+    drift_labels_hidden:
+      drift_type: shift_mean
+      drift_size: large
+      affected_features: [retail_price]
+      label_shift_factor: null
+      labels_available: false
+      expected_action: REQUEST_LABELS

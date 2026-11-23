@@ -1,0 +1,13 @@
+metric,value
+raw_rows,8906
+raw_columns,17
+cleaned_rows,8906
+reference_half_size,4453
+reference_train_size_80pct,3562
+reference_val_size_20pct,891
+clean_pool_size,4453
+distinct_Region,4
+distinct_product_main_category,26
+distinct_BrandGroup,11
+distinct_OrderMonth,11
+order_date_range,2020-12-01 to 2021-10-24

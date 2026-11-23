@@ -1,0 +1,18 @@
+fact,value
+python_version,3.14.6
+pandas_version,3.1.0
+numpy_version,2.5.4
+scipy_version,1.18.1
+scikit_learn_version,1.9.1
+streamlit_version,1.66.1
+plotly_version,7.1.0
+pytest_version,9.2.0
+git_commits_count,26
+src_python_files,17
+src_lines_of_code,4176
+experiments_python_files,3
+experiments_lines_of_code,894
+tests_python_files,9
+tests_lines_of_code,1737
+cpu_model,13th Gen Intel(R) Core(TM) i5-1334U
+total_ram,15.69 GB

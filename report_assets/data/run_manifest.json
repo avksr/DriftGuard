@@ -1,0 +1,147 @@
+{
+  "last_updated_utc": "2026-11-01T10:20:00Z",
+  "number_of_seeds": 30,
+  "experiments": {
+    "A": {
+      "description": "Detector sensitivity, detection delay, and false-alarm evaluation across rules and batch sizes",
+      "latest_commit": "fd11597",
+      "latest_run_utc": "2026-11-01T09:40:00Z",
+      "notes": "30 seeds across 10 scenarios (900 rows total). Base 8 scenarios run under commit 62f7561; 48-batch fair false-alarm scenarios (no_drift_bs150, no_drift_bs600) appended in commit fd11597."
+    },
+    "B": {
+      "description": "Monitoring strategies comparison (Fixed k=1, Fixed k=4, Adaptive) across drift sizes and shapes",
+      "latest_commit": "62f7561",
+      "latest_run_utc": "2026-10-30T15:00:21Z",
+      "notes": "30 seeds across 5 scenarios (450 rows total). Unchanged since run; no dependencies modified."
+    },
+    "C": {
+      "description": "Feature ranking accuracy (Precision@k) across 1-feature, 2-feature, and 3-feature drift scenarios",
+      "latest_commit": "97885d0",
+      "latest_run_utc": "2026-11-01T10:19:05Z",
+      "notes": "30 seeds across 7 scenarios (210 rows total). Rerun with 30 seeds after fixing multi-feature product_rating injection bug to use bounded shift_additive."
+    },
+    "D": {
+      "description": "Decision agent end-to-end evaluation with streaming premise verification",
+      "latest_commit": "fd11597",
+      "latest_run_utc": "2026-11-01T09:34:14Z",
+      "notes": "30 seeds across 4 scenarios (120 rows total). Evaluates rules-based decision table routing across batches 16-21."
+    }
+  },
+  "configuration": {
+    "random_seed": 42,
+    "experiment_repeats": 30,
+    "data": {
+      "csv_path": "data/E-Commerce.csv",
+      "target": "discount_pct",
+      "reference_fraction": 0.5,
+      "top_brands": 10,
+      "baseline_train_fraction": 0.8
+    },
+    "model": {
+      "type": "RandomForestRegressor",
+      "n_estimators": 100,
+      "random_state": 42,
+      "model_path": "models/baseline_model.joblib",
+      "metrics_path": "models/baseline_metrics.json",
+      "ref_val_path": "models/reference_val_data.csv"
+    },
+    "quality": {
+      "max_missing_fraction": 0.1,
+      "unseen_category_tolerance": 0.05,
+      "expected_features": [
+        "retail_price",
+        "product_rating",
+        "Region",
+        "product_main_category",
+        "BrandGroup",
+        "OrderMonth"
+      ]
+    },
+    "batch_size": 300,
+    "n_batches_per_run": 48,
+    "drift_start_batch": 16,
+    "gradual_ramp_batches": 8,
+    "drift_rule": "both",
+    "psi_bins": 10,
+    "psi_flag_threshold": 0.25,
+    "p_value_threshold": 0.01,
+    "persistence_required": 2,
+    "adaptive": {
+      "normal_interval": 4,
+      "alert_interval": 1,
+      "recovery_clean_required": 3
+    },
+    "performance": {
+      "metric": "mae",
+      "degradation_threshold": 1.2,
+      "consecutive_degraded_required": 2,
+      "window_size": 5
+    },
+    "retraining": {
+      "recent_window_batches": 5,
+      "min_improvement": 0.05,
+      "max_old_data_regression": 0.1,
+      "train_fraction": 0.75
+    },
+    "drift_sizes": {
+      "small": {
+        "price_factor": 1.15,
+        "category_share_drop": 0.1,
+        "rating_shift": -0.2
+      },
+      "medium": {
+        "price_factor": 1.4,
+        "category_share_drop": 0.25,
+        "rating_shift": -0.5
+      },
+      "large": {
+        "price_factor": 2.0,
+        "category_share_drop": 0.45,
+        "rating_shift": -1.0
+      }
+    },
+    "experiment_d": {
+      "eval_batch_offset": 5,
+      "scenarios": {
+        "drift_perf_fine": {
+          "drift_type": "shift_category_mix",
+          "drift_size": "large",
+          "affected_features": [
+            "Region"
+          ],
+          "label_shift_factor": null,
+          "labels_available": true,
+          "expected_action": "INVESTIGATE"
+        },
+        "drift_and_degraded": {
+          "drift_type": "shift_mean",
+          "drift_size": "large",
+          "affected_features": [
+            "retail_price"
+          ],
+          "label_shift_factor": 1.8,
+          "labels_available": true,
+          "expected_action": "PROPOSE_RETRAIN"
+        },
+        "perf_worse_no_drift": {
+          "drift_type": "label_shift",
+          "drift_size": "large",
+          "affected_features": null,
+          "label_shift_factor": 1.8,
+          "labels_available": true,
+          "expected_action": "INVESTIGATE"
+        },
+        "drift_labels_hidden": {
+          "drift_type": "shift_mean",
+          "drift_size": "large",
+          "affected_features": [
+            "retail_price"
+          ],
+          "label_shift_factor": null,
+          "labels_available": false,
+          "expected_action": "REQUEST_LABELS"
+        }
+      }
+    }
+  }
+}

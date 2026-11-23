@@ -1,0 +1,11 @@
+test_file,number_of_tests,passed,failed,run_time
+tests/test_adaptive_monitor.py,9,9,0,
+tests/test_baseline_model.py,6,6,0,
+tests/test_batch_simulator.py,9,9,0,
+tests/test_dashboard.py,1,1,0,
+tests/test_data_loader.py,9,9,0,
+tests/test_decision_agent.py,11,11,0,
+tests/test_drift_detector.py,20,20,0,
+tests/test_retrainer.py,7,7,0,
+tests/test_smoke.py,5,5,0,
+TOTAL,77,77,0,64.76s

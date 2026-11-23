@@ -1,0 +1,243 @@
+================================================================================
+ DRIFTMONITOR DATA AUDIT: data/E-Commerce.csv
+================================================================================
+
+--- 1. SHAPE, COLUMNS & RAW DATA TYPES ---
+Total Rows:    8,906
+Total Columns: 17
+
+Columns and raw dtypes:
+   1. Customer_uniq_id               : str        (non-null: 8,906)
+   2. Region                         : str        (non-null: 8,906)
+   3. Order_Date                     : str        (non-null: 8,906)
+   4. Expected_Delivery_Date         : str        (non-null: 8,906)
+   5. Delivered_Date                 : str        (non-null: 8,906)
+   6. product_name                   : str        (non-null: 8,906)
+   7. product_main_category          : str        (non-null: 8,906)
+   8. product_subcategory            : str        (non-null: 8,906)
+   9. product_category_filter        : str        (non-null: 8,906)
+  10. product_category_subfilter     : str        (non-null: 8,906)
+  11. product_unique ID              : str        (non-null: 8,906)
+  12. retail_price                   : int64      (non-null: 8,906)
+  13. discounted_price               : int64      (non-null: 8,906)
+  14. product_rating                 : float64    (non-null: 8,906)
+  15. Brand                          : str        (non-null: 8,906)
+  16. product_specifications         : str        (non-null: 8,906)
+  17. description                    : str        (non-null: 8,906)
+
+--- 2. MISSING VALUES PER COLUMN ---
+  Customer_uniq_id               :     0 missing ( 0.00%)
+  Region                         :     0 missing ( 0.00%)
+  Order_Date                     :     0 missing ( 0.00%)
+  Expected_Delivery_Date         :     0 missing ( 0.00%)
+  Delivered_Date                 :     0 missing ( 0.00%)
+  product_name                   :     0 missing ( 0.00%)
+  product_main_category          :     0 missing ( 0.00%)
+  product_subcategory            :     0 missing ( 0.00%)
+  product_category_filter        :     0 missing ( 0.00%)
+  product_category_subfilter     :     0 missing ( 0.00%)
+  product_unique ID              :     0 missing ( 0.00%)
+  retail_price                   :     0 missing ( 0.00%)
+  discounted_price               :     0 missing ( 0.00%)
+  product_rating                 :     0 missing ( 0.00%)
+  Brand                          :     0 missing ( 0.00%)
+  product_specifications         :     0 missing ( 0.00%)
+  description                    :     0 missing ( 0.00%)
+
+--- 3. DUPLICATE ROWS ---
+Exact duplicate rows across all columns: 0
+Duplicate Customer_uniq_id rows:         0
+
+--- 4. PRICING COLUMNS ANALYSIS ---
+
+  Analyzing 'retail_price':
+    Raw type:              Numeric
+    Unparseable values:    0
+    Valid numeric values:  8,906
+    Zero values:           0
+    Negative values:       0
+    Min:                   115.00
+    Max:                   116292.00
+    Mean:                  1969.97
+    Median:                1195.00
+    Std Dev:               3341.31
+
+  Analyzing 'discounted_price':
+    Raw type:              Numeric
+    Unparseable values:    0
+    Valid numeric values:  8,906
+    Zero values:           0
+    Negative values:       0
+    Min:                   109.00
+    Max:                   116292.00
+    Mean:                  1093.70
+    Median:                599.00
+    Std Dev:               2433.78
+
+  Price consistency checks:
+    Rows where discounted_price > retail_price: 0 (0.00%)
+    Rows where discounted_price == retail_price: 775 (8.70%)
+
+--- 5. DATE COLUMNS ANALYSIS ---
+
+  Analyzing 'Order_Date':
+    Sample values:         ['24-10-2021', '24-10-2021', '24-10-2021']
+    Unparseable values:    0
+    Valid parsed dates:    8,906
+    Earliest Date:         2020-12-01
+    Latest Date:           2021-10-24
+    Date Span:             327 days (~10.8 months)
+
+  Analyzing 'Expected_Delivery_Date':
+    Sample values:         ['25-10-2021', '25-10-2021', '25-10-2021']
+    Unparseable values:    0
+    Valid parsed dates:    8,906
+    Earliest Date:         2020-12-04
+    Latest Date:           2021-10-25
+    Date Span:             325 days (~10.7 months)
+
+  Analyzing 'Delivered_Date':
+    Sample values:         ['25-10-2021', '25-10-2021', '25-10-2021']
+    Unparseable values:    0
+    Valid parsed dates:    8,906
+    Earliest Date:         2020-12-02
+    Latest Date:           2021-10-25
+    Date Span:             327 days (~10.8 months)
+
+--- 6. CATEGORICAL COLUMNS ANALYSIS ---
+
+  Column 'Region':
+    Raw unique values:     4
+    Cleaned unique values: 4 (after strip whitespace)
+    Value counts (top 5):
+      - East                          :  3421 (38.4%)
+      - West                          :  2763 (31.0%)
+      - North                         :  1771 (19.9%)
+      - South                         :   951 (10.7%)
+
+  Column 'product_main_category':
+    Raw unique values:     26
+    Cleaned unique values: 26 (after strip whitespace)
+    Value counts (top 5):
+      - Clothing                      :  2943 (33.0%)
+      - Mobiles & Accessories         :  1084 (12.2%)
+      - Automotive                    :  1001 (11.2%)
+      - Home Decor & Festive Needs    :   727 (8.2%)
+      - Computers                     :   558 (6.3%)
+
+  Column 'product_subcategory':
+    Raw unique values:     135
+    Cleaned unique values: 135 (after strip whitespace)
+    Value counts (top 5):
+      - Women's Clothing              :  2118 (23.8%)
+      - Accessories & Spare parts     :   923 (10.4%)
+      - Tablet Accessories            :   794 (8.9%)
+      - Men's Clothing                :   518 (5.8%)
+      - Tools                         :   377 (4.2%)
+
+  Column 'Brand':
+    Raw unique values:     2484
+    Cleaned unique values: 2484 (after strip whitespace)
+    Value counts (top 5):
+      - ALLURE AUTO                   :   469 (5.3%)
+      - REGULAR                       :   300 (3.4%)
+      - SLIM                          :   267 (3.0%)
+      - THELOSTPUPPY                  :   250 (2.8%)
+      - BLACK                         :   147 (1.7%)
+    Top 10 Brands:
+       1. ALLURE AUTO              :  469 (5.27%)
+       2. REGULAR                  :  300 (3.37%)
+       3. SLIM                     :  267 (3.00%)
+       4. THELOSTPUPPY             :  250 (2.81%)
+       5. BLACK                    :  147 (1.65%)
+       6. DAILYOBJECTS             :  144 (1.62%)
+       7. SPEEDWAV                 :  134 (1.50%)
+       8. WHITE                    :  131 (1.47%)
+       9. ENTHOPIA                 :  101 (1.13%)
+      10. RED                      :   95 (1.07%)
+
+--- 7. PRODUCT RATING DISTRIBUTION ---
+  Total rows:              8906
+  Missing / NaN ratings:   0 (0.00%)
+  Valid ratings:           8,906
+  Min rating:              1.0
+  Max rating:              5.0
+  Mean rating:             3.07
+  Median rating:           3.00
+  Distinct rating values:  [1.0, 1.3, 1.5, 1.8, 2.0, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0]
+  Value distribution:
+    Rating 1.0:  1671 (18.8%)
+    Rating 1.3:     2 (0.0%)
+    Rating 1.5:     1 (0.0%)
+    Rating 1.8:     1 (0.0%)
+    Rating 2.0:  1691 (19.0%)
+    Rating 2.2:     2 (0.0%)
+    Rating 2.3:     8 (0.1%)
+    Rating 2.4:     2 (0.0%)
+    Rating 2.5:    11 (0.1%)
+    Rating 2.6:     1 (0.0%)
+    Rating 2.7:     1 (0.0%)
+    Rating 2.8:     2 (0.0%)
+    Rating 2.9:     3 (0.0%)
+    Rating 3.0:  1737 (19.5%)
+    Rating 3.1:     1 (0.0%)
+    Rating 3.2:     8 (0.1%)
+    Rating 3.3:     6 (0.1%)
+    Rating 3.4:     6 (0.1%)
+    Rating 3.5:    15 (0.2%)
+    Rating 3.6:    11 (0.1%)
+    Rating 3.7:    20 (0.2%)
+    Rating 3.8:    10 (0.1%)
+    Rating 3.9:     8 (0.1%)
+    Rating 4.0:  1721 (19.3%)
+    Rating 4.1:     9 (0.1%)
+    Rating 4.2:    22 (0.2%)
+    Rating 4.3:    19 (0.2%)
+    Rating 4.4:     7 (0.1%)
+    Rating 4.5:    17 (0.2%)
+    Rating 4.6:     4 (0.0%)
+    Rating 4.7:     5 (0.1%)
+    Rating 4.8:     9 (0.1%)
+    Rating 4.9:     1 (0.0%)
+    Rating 5.0:  1874 (21.0%)
+
+--- 8. CANDIDATE TARGETS DISTRIBUTION ---
+  Main Target: discount_pct = (retail_price - discounted_price) / retail_price
+    Eligible rows (rp > 0, dp > 0, dp <= rp): 8,906 / 8,906 (100.0%)
+    Min discount:          0.0000
+    Max discount:          0.9195
+    Mean discount:         0.4426 (44.3%)
+    Median discount:       0.5002 (50.0%)
+    Std Dev discount:      0.2266
+    25th Percentile:       0.2864
+    75th Percentile:       0.6244
+    Zero discount rows:    775 (8.70%)
+
+  Fallback Target: delivery_days = Delivered_Date - Order_Date
+    Eligible rows with both dates parsed:      8,906 / 8,906
+    Negative delivery days (anomalies):        0
+    Valid non-negative delivery days:          8,906
+    Min delivery days:     0
+    Max delivery days:     7
+    Mean delivery days:    2.94
+    Median delivery days:  3.00
+    Std Dev delivery days: 0.40
+    Value counts summary (top 5):
+       3 days:  8482 (95.2%)
+       1 days:   223 (2.5%)
+       2 days:   144 (1.6%)
+       4 days:    27 (0.3%)
+       7 days:    18 (0.2%)
+
+--- DECISION RULES EVALUATION (Section 4.2) ---
+  [Rule 1] Features with >20% missing values:
+    None. All core candidate features have well under 20% missing values.
+  [Rule 2] Order_Date span: 327 days (~10.8 months).
+    PASS: Order_Date covers >= 2 months.
+  [Rule 3] Usable features available: >= 5 features (retail_price, product_rating, Region, product_main_category, BrandGroup, OrderMonth).
+  [Rule 4] discount_pct standard deviation: 0.2266
+    PASS: discount_pct shows healthy variance (std > 0.05). Proceed with discount_pct as primary target!
+
+================================================================================
+ END OF AUDIT REPORT
+================================================================================

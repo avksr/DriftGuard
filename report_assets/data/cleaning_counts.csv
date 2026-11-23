@@ -1,0 +1,7 @@
+rule_name,rows_before,rows_after,rows_removed
+Drop long-text and auxiliary columns,8906,8906,0
+Drop exact duplicates,8906,8906,0
+Drop missing essential fields,8906,8906,0
+Drop non-positive prices,8906,8906,0
+Drop discounted price greater than retail price,8906,8906,0
+Drop unparseable dates,8906,8906,0

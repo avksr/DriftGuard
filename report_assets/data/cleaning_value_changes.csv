@@ -1,0 +1,16 @@
+item,value,notes
+duplicate_rows_exact,0,Exact duplicates across all 17 columns
+duplicate_rows_customer_uniq_id,0,Duplicate Customer_uniq_id entries
+missing_retail_price,0,Missing values in retail_price
+missing_discounted_price,0,Missing values in discounted_price
+missing_Region,0,Missing values in Region
+missing_product_main_category,0,Missing values in product_main_category
+missing_Order_Date,0,Missing values in Order_Date
+missing_product_rating,0,Missing values in product_rating
+retail_price_cap_value,20576.42,99.5th percentile computed strictly on reference half
+retail_price_values_capped_reference,23,Rows with retail_price > cap in reference half
+retail_price_values_capped_clean_pool,24,Rows with retail_price > cap in clean pool
+retail_price_values_capped_total,47,Total rows capped across cleaned dataset
+product_rating_median_impute_value,3.0,Median rating computed strictly on reference half
+rating_values_filled_with_median,0,Missing ratings imputed (dataset contains 0 missing)
+rows_discount_exceeds_retail,0,Inconsistent pricing where discounted > retail

@@ -1,0 +1,31 @@
+{
+  "model_type": "RandomForestRegressor",
+  "random_seed": 42,
+  "n_train_samples": 3562,
+  "n_val_samples": 891,
+  "features": [
+    "retail_price",
+    "product_rating",
+    "Region",
+    "product_main_category",
+    "BrandGroup",
+    "OrderMonth"
+  ],
+  "numeric_features": [
+    "retail_price",
+    "product_rating"
+  ],
+  "categorical_features": [
+    "Region",
+    "product_main_category",
+    "BrandGroup",
+    "OrderMonth"
+  ],
+  "target": "discount_pct",
+  "dummy_val_mae": 0.18988956649407837,
+  "baseline_train_mae": 0.05109871416392679,
+  "baseline_val_mae": 0.1336719467846932,
+  "baseline_val_rmse": 0.18668177684374535,
+  "improvement_over_dummy_pct": 29.60542843260337,
+  "sanity_check_passed": true
+}
